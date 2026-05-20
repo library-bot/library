@@ -1,210 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Books Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Books Popup</title>
 
   <style>
     body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #eef2ff;
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 20px;
     }
 
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-    }
-
-    h1, h2 {
+    .box {
+      background: #ffffff;
+      padding: 40px 50px;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
       text-align: center;
+      border: 1px solid #e6e6e6;
     }
 
-    /* SEARCH */
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-
-    /* TABLE */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    th {
-      background: #007bff;
-      color: white;
-      padding: 10px;
-    }
-
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    tr:hover {
-      background: #f1f1f1;
-    }
-
-    /* STATS */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-      margin: 20px 0;
-    }
-
-    .stat-box {
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    .stat-box h3 {
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .stat-box p {
-      margin: 10px 0 0;
-      font-size: 18px;
+    .title {
+      font-size: 24px;
       font-weight: bold;
-      color: #007bff;
+      color: #222;
+      margin-bottom: 10px;
     }
 
-    .loading {
-      text-align: center;
-      margin: 20px;
+    .subtitle {
+      font-size: 18px;
+      color: #2b7cff;
+      font-weight: 500;
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
-
-  <h1>📚 Books Dashboard</h1>
-
-  <!-- STATISTICS -->
-  <h2>📊 Statistics</h2>
-  <div id="stats" class="stats"></div>
-
-  <!-- SEARCH -->
-  <input type="text" id="search" placeholder="Search books...">
-
-  <div id="loading" class="loading">Loading books...</div>
-
-  <!-- TABLE -->
-  <table id="table" style="display:none;">
-    <thead>
-      <tr>
-        <th>S/L</th>
-        <th>CODE</th>
-        <th>NAME</th>
-        <th>PRICE</th>
-        <th>STATUS</th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
-
-</div>
-
-<script>
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
-
-let booksData = [];
-
-/* LOAD BOOKS */
-fetch(API_URL)
-  .then(res => res.text())
-  .then(text => {
-
-    booksData = JSON.parse(text);
-
-    renderBooks(booksData);
-
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("table").style.display = "table";
-  });
-
-/* LOAD STATISTICS (Topic + Book) */
-fetch(API_URL)
-  .then(res => res.text())
-  .then(text => {
-
-    const stats = JSON.parse(text);
-
-    const statsDiv = document.getElementById("stats");
-
-    let html = "";
-
-    stats.forEach(item => {
-
-      html += `
-        <div class="stat-box">
-          <h3>${item.Topic}</h3>
-          <p>${item.Book}</p>
-        </div>
-      `;
-    });
-
-    statsDiv.innerHTML = html;
-  });
-
-/* RENDER BOOKS */
-function renderBooks(data) {
-
-  const tbody = document.getElementById("tbody");
-
-  let html = "";
-
-  data.forEach(book => {
-
-    let status = (book.STATUS || "").toLowerCase();
-
-    html += `
-      <tr>
-        <td>${book["S/L"] || ""}</td>
-        <td>${book.CODE || ""}</td>
-        <td>${book.NAME || ""}</td>
-        <td>${book.PRICE || ""}</td>
-        <td>${book.STATUS || ""}</td>
-      </tr>
-    `;
-  });
-
-  tbody.innerHTML = html;
-}
-
-/* SEARCH */
-document.getElementById("search").addEventListener("input", function () {
-
-  let val = this.value.toLowerCase();
-
-  let filtered = booksData.filter(b =>
-    (b.NAME || "").toLowerCase().includes(val) ||
-    (b.CODE || "").toLowerCase().includes(val)
-  );
-
-  renderBooks(filtered);
-});
-
-</script>
+  <div class="box">
+    <div class="title">Books Dashboard</div>
+    <div class="subtitle">Available Books</div>
+  </div>
 
 </body>
 </html>
