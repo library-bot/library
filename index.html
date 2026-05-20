@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NCPSC Library System</title>
+    <title>Library Management System</title>
 
     <style>
 
@@ -17,18 +17,9 @@
 
             height:100vh;
 
-            display:flex;
-            justify-content:center;
-            align-items:center;
-
             font-family:"Segoe UI", sans-serif;
 
-            background: linear-gradient(
-                135deg,
-                #edf6ff,
-                #dbeeff,
-                #f7fbff
-            );
+            background:#f8fbff;
 
             overflow:hidden;
         }
@@ -40,7 +31,7 @@
 
             display:flex;
             flex-direction:column;
-            justify-content:center;
+
             align-items:center;
 
             text-align:center;
@@ -48,59 +39,38 @@
             padding:30px;
         }
 
-        /* BIG TITLE */
+        /* TOP TITLE */
 
-      
-        /* SCHOOL NAME */
-          h2{
+        h1{
 
-            font-size: clamp(40px, 5vw, 95px);
+            margin-top:20px;
+
+            font-size:clamp(38px, 5vw, 90px);
+
+            color:#2563eb;
 
             font-weight:900;
 
             text-transform:uppercase;
 
-            color:#0f172a;
-
-            margin-bottom:20px;
-
             letter-spacing:3px;
-
-            text-shadow:
-                3px 3px 0px #60a5fa;
-        }
-
-
-        h1{
-
-            font-size:clamp(26px, 3.5vw, 72px);
-
-            color:#2b5d8a;
-
-            font-weight:800;
-
-            text-transform:uppercase;
-
-            white-space:nowrap;
-
-            line-height:1.2;
-
-            margin-bottom:50px;
         }
 
         /* BUTTON */
 
         .btn{
 
+            margin-top:auto;
+
             text-decoration:none;
 
-            background:#4a90e2;
+            background:#2563eb;
 
             color:white;
 
-            padding:20px 55px;
+            padding:22px 60px;
 
-            font-size:clamp(18px, 2vw, 30px);
+            font-size:clamp(20px, 2vw, 32px);
 
             font-weight:700;
 
@@ -111,32 +81,29 @@
             transition:0.3s ease;
 
             box-shadow:
-                0 10px 25px rgba(74,144,226,0.25);
+                0 10px 25px rgba(37,99,235,0.2);
         }
 
         .btn:hover{
 
-            background:#357bd8;
+            background:#1d4ed8;
 
-            transform:translateY(-3px);
+            transform:translateY(-2px);
         }
 
         .info{
 
             margin-top:25px;
 
-            font-size:16px;
+            margin-bottom:auto;
 
-            color:#6b7280;
+            font-size:15px;
+
+            color:#64748b;
 
             text-transform:uppercase;
-        }
 
-        @media(max-width:900px){
-
-            h1{
-                white-space:normal;
-            }
+            letter-spacing:1px;
         }
 
     </style>
@@ -146,12 +113,8 @@
 
     <div class="container">
 
-        <h2>
-            LIBRARY MANAGEMENT SYSTEM
-        </h2>
-
         <h1>
-            NIRJHOR CANTONMENT PUBLIC SCHOOL & COLLEGE
+            LIBRARY MANAGEMENT SYSTEM
         </h1>
 
         <a href="admin-panel.html" class="btn">
