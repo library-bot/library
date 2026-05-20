@@ -50,6 +50,10 @@ button{
   cursor:pointer;
 }
 
+button:hover{
+  opacity:0.9;
+}
+
 </style>
 
 </head>
@@ -85,10 +89,17 @@ button{
 const URL =
 "https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
 
+
+// ===============================
+// LOAD DATA
+// ===============================
 async function load(){
 
-  const res = await fetch(URL+"?action=getBorrowData");
-  const data = await res.json();
+  const res =
+    await fetch(URL + "?action=getBorrowData");
+
+  const data =
+    await res.json();
 
   let html = "";
 
@@ -123,25 +134,51 @@ async function load(){
   document.getElementById("body").innerHTML = html;
 }
 
-async function save(code,borrowerId,i){
 
-  const status = document.getElementById("st"+i).value;
+// ===============================
+// SAVE STATUS (FIXED)
+// ===============================
+async function save(code, borrowerId, i){
 
-  await fetch(URL,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-      action:"updateStatus",
-      code:code,
-      borrowerId:borrowerId,
-      status:status
-    })
-  });
+  const status =
+    document.getElementById("st"+i).value;
 
-  alert("Updated!");
-  load();
+  const formData =
+    new URLSearchParams();
+
+  formData.append("action", "updateStatus");
+  formData.append("code", code.trim());
+  formData.append("borrowerId", borrowerId.trim());
+  formData.append("status", status);
+
+
+
+  const res =
+    await fetch(URL, {
+
+      method: "POST",
+      body: formData
+
+    });
+
+
+
+  const result =
+    await res.json();
+
+
+
+  console.log(result);
+
+
+
+  if(result.status === "success"){
+    alert("✅ Status Updated Successfully");
+    load(); // reload table
+  }
+  else{
+    alert("❌ " + result.message);
+  }
 }
 
 load();
