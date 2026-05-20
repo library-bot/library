@@ -33,6 +33,7 @@
       margin: 10px 0 20px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      font-size: 16px;
     }
 
     /* TABLE */
@@ -46,6 +47,7 @@
       background: #007bff;
       color: white;
       padding: 12px;
+      text-align: left;
     }
 
     td {
@@ -57,7 +59,7 @@
       background: #f1f1f1;
     }
 
-    /* BADGE */
+    /* STATUS BADGE */
     .badge {
       padding: 5px 10px;
       border-radius: 20px;
@@ -78,7 +80,7 @@
     }
 
     .stat-box {
-      background: white;
+      background: #fff;
       padding: 15px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -97,13 +99,6 @@
       font-weight: bold;
     }
 
-    .loading {
-      text-align: center;
-      margin: 20px;
-      font-size: 18px;
-      color: #555;
-    }
-
     /* MOBILE CARDS */
     .cards {
       display: none;
@@ -116,6 +111,13 @@
       padding: 15px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .loading {
+      text-align: center;
+      margin: 20px;
+      font-size: 18px;
+      color: #555;
     }
 
     @media (max-width: 768px) {
@@ -131,12 +133,12 @@
 
   <h1>📚 Books Dashboard</h1>
 
-  <!-- STATS -->
+  <!-- STATISTICS -->
   <h2>📊 Statistics</h2>
   <div id="stats" class="stats"></div>
 
   <!-- SEARCH -->
-  <input type="text" id="search" placeholder="Search books by name or code...">
+  <input type="text" id="search" placeholder="Search by name or code...">
 
   <div id="loading" class="loading">Loading data...</div>
 
@@ -177,10 +179,9 @@ fetch(API_URL)
 
     document.getElementById("loading").style.display = "none";
     document.getElementById("table").style.display = "table";
-
   });
 
-/* LOAD STATS */
+/* LOAD STATISTICS (A & B COLUMN) */
 fetch(API_URL)
   .then(res => res.text())
   .then(text => {
@@ -191,11 +192,12 @@ fetch(API_URL)
 
     let html = "";
 
-    stats.forEach(s => {
+    stats.forEach(item => {
+
       html += `
         <div class="stat-box">
-          <h3>${s.TITLE}</h3>
-          <p>${s.VALUE}</p>
+          <h3>${item.TITLE}</h3>
+          <p>${item.VALUE}</p>
         </div>
       `;
     });
@@ -233,9 +235,9 @@ function renderBooks(data) {
     c += `
       <div class="card">
         <h3>${book.NAME || ""}</h3>
-        <p><b>Code:</b> ${book.CODE}</p>
-        <p><b>Price:</b> ${book.PRICE}</p>
-        <p><b>Status:</b> <span class="badge ${badge}">${book.STATUS}</span></p>
+        <p><b>Code:</b> ${book.CODE || ""}</p>
+        <p><b>Price:</b> ${book.PRICE || ""}</p>
+        <p><b>Status:</b> <span class="badge ${badge}">${book.STATUS || ""}</span></p>
       </div>
     `;
   });
