@@ -2,157 +2,154 @@
 <html lang="en">
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<title>NCPSC Library Status Update</title>
 
-  <title>NCPSC Library Status Update</title>
+<style>
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
 
+body {
+  background: linear-gradient(135deg,#ff9800,#f44336);
+  min-height: 100vh;
+  padding: 15px;
+}
 
-  <style>
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
 
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial,sans-serif;
-    }
+h1 {
+  text-align: center;
+  color: #e65100;
+  font-size: 22px;
+}
 
-    body{
-      background:linear-gradient(135deg,#ff9800,#f44336);
-      min-height:100vh;
-      padding:20px;
-    }
+p {
+  text-align: center;
+  color: #555;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
 
-    .container{
-      max-width:1200px;
-      margin:auto;
-      background:white;
-      border-radius:20px;
-      padding:30px;
-      box-shadow:0 10px 25px rgba(0,0,0,0.2);
-    }
+.loading {
+  text-align: center;
+  font-size: 16px;
+  padding: 20px;
+  color: #555;
+}
 
-    h1{
-      text-align:center;
-      color:#e65100;
-      margin-bottom:10px;
-    }
+/* TABLE WRAPPER (IMPORTANT FOR MOBILE) */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
 
-    p{
-      text-align:center;
-      color:#555;
-      margin-bottom:30px;
-    }
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:20px;
-    }
+th {
+  background: #e65100;
+  color: white;
+  padding: 12px;
+  font-size: 14px;
+}
 
-    th{
-      background:#e65100;
-      color:white;
-      padding:14px;
-      border:1px solid #ddd;
-      font-size:15px;
-    }
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 13px;
+}
 
-    td{
-      padding:12px;
-      border:1px solid #ddd;
-      text-align:center;
-      font-size:14px;
-    }
+tr:nth-child(even) {
+  background: #fff3e0;
+}
 
-    tr:nth-child(even){
-      background:#fff3e0;
-    }
+/* SELECT */
+select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+}
 
-    select{
-      padding:10px;
-      border-radius:8px;
-      border:2px solid #ddd;
-      font-size:14px;
-    }
+/* BUTTON */
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #e65100;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 13px;
+}
 
-    button{
-      padding:10px 15px;
-      border:none;
-      border-radius:8px;
-      background:#e65100;
-      color:white;
-      font-weight:bold;
-      cursor:pointer;
-    }
+button:hover {
+  opacity: 0.9;
+}
 
-    button:hover{
-      opacity:0.95;
-    }
+/* MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
 
-    .success{
-      color:green;
-      font-weight:bold;
-    }
+  .container {
+    padding: 15px;
+  }
 
-    .loading{
-      text-align:center;
-      font-size:18px;
-      padding:30px;
-      color:#555;
-    }
+  table {
+    min-width: 700px;
+  }
 
-  </style>
+}
+
+</style>
 
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>📚 NCPSC Library</h1>
+  <h1>📚 NCPSC Library</h1>
+  <p>Update Book Status</p>
 
-    <p>
-      Update Book Status
-    </p>
+  <div id="loading" class="loading">
+    Loading data...
+  </div>
 
-
-
-    <div id="loading" class="loading">
-      Loading data...
-    </div>
-
-
+  <div class="table-wrapper">
 
     <table id="borrowTable" style="display:none;">
 
       <thead>
-
         <tr>
-
           <th>Code</th>
-
-          <th>Borrower Id</th>
-
+          <th>Borrower</th>
           <th>Borrow Date</th>
-
-          <th>Submission Date</th>
-
-          <th>Book Name</th>
-
+          <th>Submission</th>
+          <th>Book</th>
           <th>Price</th>
-
           <th>Status</th>
-
-          <th>Save</th>
-
+          <th>Action</th>
         </tr>
-
       </thead>
 
       <tbody id="tableBody"></tbody>
@@ -161,219 +158,101 @@
 
   </div>
 
-
-
-
+</div>
 
 <script>
-
-
-
-// =====================================================
-// GOOGLE APPS SCRIPT URL
-// =====================================================
 
 const SCRIPT_URL =
 "https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
 
-
-
-
-// =====================================================
 // LOAD DATA
-// =====================================================
+async function loadData() {
 
-async function loadData(){
+  try {
 
-  try{
+    const response = await fetch(SCRIPT_URL + "?action=getBorrowed");
+    const result = await response.json();
 
-    const response =
-      await fetch(SCRIPT_URL + "?action=getBorrowData");
-
-    const data =
-      await response.json();
-
-
-
-    const tableBody =
-      document.getElementById("tableBody");
-
-
-
+    const tableBody = document.getElementById("tableBody");
     tableBody.innerHTML = "";
 
+    const data = result.data || [];
 
+    data.forEach((row, index) => {
 
-    data.forEach((row,index)=>{
-
-      const tr =
-        document.createElement("tr");
-
-
+      const tr = document.createElement("tr");
 
       tr.innerHTML = `
-
         <td>${row.code}</td>
-
         <td>${row.borrowerId}</td>
-
         <td>${row.borrowDate}</td>
-
         <td>${row.submissionDate}</td>
-
         <td>${row.bookName}</td>
-
         <td>${row.price}</td>
 
         <td>
-
           <select id="status-${index}">
-
-            <option value="Returned"
-              ${row.status==="Returned"?"selected":""}>
-              Returned
-            </option>
-
-            <option value="Lost"
-              ${row.status==="Lost"?"selected":""}>
-              Lost
-            </option>
-
-            <option value="Damaged"
-              ${row.status==="Damaged"?"selected":""}>
-              Damaged
-            </option>
-
-            <option value="Borrowed"
-              ${row.status==="Borrowed"?"selected":""}>
-              Borrowed
-            </option>
-
+            <option value="Borrowed" ${row.status==="Borrowed"?"selected":""}>Borrowed</option>
+            <option value="Returned" ${row.status==="Returned"?"selected":""}>Returned</option>
+            <option value="Lost" ${row.status==="Lost"?"selected":""}>Lost</option>
+            <option value="Damaged" ${row.status==="Damaged"?"selected":""}>Damaged</option>
           </select>
-
         </td>
 
         <td>
-
-          <button onclick="saveStatus(
-            '${row.code}',
-            '${row.borrowerId}',
-            ${index}
-          )">
-
+          <button onclick="saveStatus('${row.code}','${row.borrowerId}',${index})">
             Save
-
           </button>
-
         </td>
-
       `;
 
-
-
       tableBody.appendChild(tr);
-
     });
 
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("borrowTable").style.display = "block";
 
-
-    document.getElementById("loading")
-      .style.display = "none";
-
-    document.getElementById("borrowTable")
-      .style.display = "table";
-
-  }
-  catch(error){
+  } catch (error) {
 
     console.error(error);
-
-    document.getElementById("loading")
-      .innerHTML =
-      "Failed to load data.";
-
+    document.getElementById("loading").innerText = "Failed to load data.";
   }
-
 }
 
-
-
-
-
-// =====================================================
 // SAVE STATUS
-// =====================================================
+async function saveStatus(code, borrowerId, index) {
 
-async function saveStatus(
-  code,
-  borrowerId,
-  index
-){
+  const status = document.getElementById(`status-${index}`).value;
 
-  const status =
-    document.getElementById(
-      `status-${index}`
-    ).value;
+  try {
 
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        action: "updateStatus",
+        code: code,
+        borrowerId: borrowerId,
+        status: status
+      })
+    });
 
+    const result = await response.json();
 
-  try{
-
-    const response =
-      await fetch(SCRIPT_URL,{
-
-        method:"POST",
-
-        body:JSON.stringify({
-
-          action:"updateStatus",
-
-          code:code,
-
-          borrowerId:borrowerId,
-
-          status:status
-
-        })
-
-      });
-
-
-
-    const result =
-      await response.json();
-
-
-
-    if(result.status==="success"){
-
-      alert("✅ Status updated successfully!");
-
-    }
-    else{
-
+    if (result.status === "success") {
+      alert("✅ Updated successfully!");
+      loadData(); // refresh table
+    } else {
       alert("❌ " + result.message);
-
     }
 
-  }
-  catch(error){
-
+  } catch (error) {
     console.error(error);
-
-    alert("❌ Failed to update status.");
-
+    alert("❌ Update failed.");
   }
-
 }
-
-
-
-
-
-// =====================================================
-// INITIAL LOAD
-// =====================================================
 
 loadData();
 
