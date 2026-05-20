@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
@@ -65,6 +66,7 @@ button:hover{
 <h2>📚 Library Status Panel</h2>
 
 <table>
+
 <thead>
 <tr>
 <th>Code</th>
@@ -90,9 +92,10 @@ const URL =
 "https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
 
 
-// ===============================
+
+// =============================
 // LOAD DATA
-// ===============================
+// =============================
 async function load(){
 
   const res =
@@ -135,9 +138,10 @@ async function load(){
 }
 
 
-// ===============================
+
+// =============================
 // SAVE STATUS (FIXED)
-// ===============================
+// =============================
 async function save(code, borrowerId, i){
 
   const status =
@@ -146,37 +150,38 @@ async function save(code, borrowerId, i){
   const formData =
     new URLSearchParams();
 
-  formData.append("action", "updateStatus");
-  formData.append("code", code.trim());
-  formData.append("borrowerId", borrowerId.trim());
-  formData.append("status", status);
+  formData.append("action","updateStatus");
+  formData.append("code",code.trim());
+  formData.append("borrowerId",borrowerId.trim());
+  formData.append("status",status);
 
 
 
   const res =
-    await fetch(URL, {
-
-      method: "POST",
-      body: formData
-
+    await fetch(URL,{
+      method:"POST",
+      body:formData
     });
 
 
 
-  const result =
-    await res.json();
+  const text = await res.text();
 
+  let result;
 
-
-  console.log(result);
+  try{
+    result = JSON.parse(text);
+  }catch(e){
+    alert("Server Error: " + text);
+    return;
+  }
 
 
 
   if(result.status === "success"){
-    alert("✅ Status Updated Successfully");
-    load(); // reload table
-  }
-  else{
+    alert("✅ Updated + Email Sent");
+    load();
+  }else{
     alert("❌ " + result.message);
   }
 }
@@ -186,4 +191,5 @@ load();
 </script>
 
 </body>
+
 </html>
