@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
 
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
-  />
+  >
 
-  <title>NCPSC Library Status System</title>
+  <title>NCPSC Library Status Update</title>
 
 
 
@@ -25,25 +25,16 @@
     body{
       background:linear-gradient(135deg,#ff9800,#f44336);
       min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
       padding:20px;
     }
 
     .container{
+      max-width:1200px;
+      margin:auto;
       background:white;
-      width:100%;
-      max-width:500px;
-      padding:35px;
       border-radius:20px;
+      padding:30px;
       box-shadow:0 10px 25px rgba(0,0,0,0.2);
-    }
-
-    .logo{
-      text-align:center;
-      font-size:45px;
-      margin-bottom:10px;
     }
 
     h1{
@@ -58,64 +49,62 @@
       margin-bottom:30px;
     }
 
-    .input-group{
-      margin-bottom:20px;
-    }
-
-    label{
-      display:block;
-      margin-bottom:8px;
-      font-weight:bold;
-      color:#333;
-    }
-
-    input,
-    select{
+    table{
       width:100%;
-      padding:14px;
-      border:2px solid #ddd;
-      border-radius:10px;
-      font-size:16px;
-      transition:0.3s;
+      border-collapse:collapse;
+      margin-top:20px;
     }
 
-    input:focus,
-    select:focus{
-      outline:none;
-      border-color:#ff9800;
-      box-shadow:0 0 8px rgba(255,152,0,0.3);
+    th{
+      background:#e65100;
+      color:white;
+      padding:14px;
+      border:1px solid #ddd;
+      font-size:15px;
+    }
+
+    td{
+      padding:12px;
+      border:1px solid #ddd;
+      text-align:center;
+      font-size:14px;
+    }
+
+    tr:nth-child(even){
+      background:#fff3e0;
+    }
+
+    select{
+      padding:10px;
+      border-radius:8px;
+      border:2px solid #ddd;
+      font-size:14px;
     }
 
     button{
-      width:100%;
-      padding:15px;
+      padding:10px 15px;
       border:none;
-      border-radius:10px;
-      background:linear-gradient(135deg,#ff9800,#f44336);
+      border-radius:8px;
+      background:#e65100;
       color:white;
-      font-size:17px;
       font-weight:bold;
       cursor:pointer;
-      transition:0.3s;
     }
 
     button:hover{
       opacity:0.95;
-      transform:translateY(-2px);
-    }
-
-    .message{
-      margin-top:20px;
-      text-align:center;
-      font-weight:bold;
     }
 
     .success{
       color:green;
+      font-weight:bold;
     }
 
-    .error{
-      color:red;
+    .loading{
+      text-align:center;
+      font-size:18px;
+      padding:30px;
+      color:#555;
     }
 
   </style>
@@ -126,88 +115,49 @@
 
   <div class="container">
 
-    <div class="logo">📚</div>
-
-    <h1>NCPSC Library</h1>
+    <h1>📚 NCPSC Library</h1>
 
     <p>
-      Book Return / Lost / Damaged System
+      Update Book Status
     </p>
 
 
 
-    <form id="statusForm">
-
-      <div class="input-group">
-
-        <label>Book Code</label>
-
-        <input
-          type="text"
-          id="bookCode"
-          placeholder="Enter Book Code"
-          required
-        />
-
-      </div>
+    <div id="loading" class="loading">
+      Loading data...
+    </div>
 
 
 
-      <div class="input-group">
+    <table id="borrowTable" style="display:none;">
 
-        <label>Borrower's ID</label>
+      <thead>
 
-        <input
-          type="text"
-          id="borrowerId"
-          placeholder="Enter Borrower's ID"
-          required
-        />
+        <tr>
 
-      </div>
+          <th>Code</th>
 
+          <th>Borrower Id</th>
 
+          <th>Borrow Date</th>
 
-      <div class="input-group">
+          <th>Submission Date</th>
 
-        <label>Status</label>
+          <th>Book Name</th>
 
-        <select id="status" required>
+          <th>Price</th>
 
-          <option value="">
-            Select Status
-          </option>
+          <th>Status</th>
 
-          <option value="Returned">
-            Returned
-          </option>
+          <th>Save</th>
 
-          <option value="Lost">
-            Lost
-          </option>
+        </tr>
 
-          <option value="Damaged">
-            Damaged
-          </option>
+      </thead>
 
-        </select>
+      <tbody id="tableBody"></tbody>
 
-      </div>
-
-
-
-      <button type="submit">
-        Save Status
-      </button>
-
-
-
-      <div
-        id="message"
-        class="message"
-      ></div>
-
-    </form>
+    </table>
 
   </div>
 
@@ -220,7 +170,7 @@
 
 
 // =====================================================
-// GOOGLE APPS SCRIPT WEB APP URL
+// GOOGLE APPS SCRIPT URL
 // =====================================================
 
 const SCRIPT_URL =
@@ -230,14 +180,122 @@ const SCRIPT_URL =
 
 
 // =====================================================
-// FORM
+// LOAD DATA
 // =====================================================
 
-const form =
-  document.getElementById("statusForm");
+async function loadData(){
 
-const message =
-  document.getElementById("message");
+  try{
+
+    const response =
+      await fetch(SCRIPT_URL + "?action=getBorrowData");
+
+    const data =
+      await response.json();
+
+
+
+    const tableBody =
+      document.getElementById("tableBody");
+
+
+
+    tableBody.innerHTML = "";
+
+
+
+    data.forEach((row,index)=>{
+
+      const tr =
+        document.createElement("tr");
+
+
+
+      tr.innerHTML = `
+
+        <td>${row.code}</td>
+
+        <td>${row.borrowerId}</td>
+
+        <td>${row.borrowDate}</td>
+
+        <td>${row.submissionDate}</td>
+
+        <td>${row.bookName}</td>
+
+        <td>${row.price}</td>
+
+        <td>
+
+          <select id="status-${index}">
+
+            <option value="Returned"
+              ${row.status==="Returned"?"selected":""}>
+              Returned
+            </option>
+
+            <option value="Lost"
+              ${row.status==="Lost"?"selected":""}>
+              Lost
+            </option>
+
+            <option value="Damaged"
+              ${row.status==="Damaged"?"selected":""}>
+              Damaged
+            </option>
+
+            <option value="Borrowed"
+              ${row.status==="Borrowed"?"selected":""}>
+              Borrowed
+            </option>
+
+          </select>
+
+        </td>
+
+        <td>
+
+          <button onclick="saveStatus(
+            '${row.code}',
+            '${row.borrowerId}',
+            ${index}
+          )">
+
+            Save
+
+          </button>
+
+        </td>
+
+      `;
+
+
+
+      tableBody.appendChild(tr);
+
+    });
+
+
+
+    document.getElementById("loading")
+      .style.display = "none";
+
+    document.getElementById("borrowTable")
+      .style.display = "table";
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    document.getElementById("loading")
+      .innerHTML =
+      "Failed to load data.";
+
+  }
+
+}
+
 
 
 
@@ -246,33 +304,16 @@ const message =
 // SAVE STATUS
 // =====================================================
 
-form.addEventListener("submit", async (e)=>{
-
-  e.preventDefault();
-
-
-
-  const bookCode =
-    document.getElementById("bookCode")
-    .value
-    .trim();
-
-  const borrowerId =
-    document.getElementById("borrowerId")
-    .value
-    .trim();
+async function saveStatus(
+  code,
+  borrowerId,
+  index
+){
 
   const status =
-    document.getElementById("status")
-    .value;
-
-
-
-  message.innerHTML =
-    "Saving...";
-
-  message.className =
-    "message";
+    document.getElementById(
+      `status-${index}`
+    ).value;
 
 
 
@@ -287,7 +328,7 @@ form.addEventListener("submit", async (e)=>{
 
           action:"updateStatus",
 
-          code:bookCode,
+          code:code,
 
           borrowerId:borrowerId,
 
@@ -302,30 +343,17 @@ form.addEventListener("submit", async (e)=>{
     const result =
       await response.json();
 
-    console.log(result);
 
 
+    if(result.status==="success"){
 
-    if(result.status === "success"){
-
-      message.innerHTML =
-        "✅ Status updated successfully!";
-
-      message.className =
-        "message success";
-
-
-
-      form.reset();
+      alert("✅ Status updated successfully!");
 
     }
     else{
 
-      message.innerHTML =
-        "❌ " + result.message;
+      alert("❌ " + result.message);
 
-      message.className =
-        "message error";
     }
 
   }
@@ -333,14 +361,21 @@ form.addEventListener("submit", async (e)=>{
 
     console.error(error);
 
-    message.innerHTML =
-      "❌ Failed to connect to server.";
+    alert("❌ Failed to update status.");
 
-    message.className =
-      "message error";
   }
 
-});
+}
+
+
+
+
+
+// =====================================================
+// INITIAL LOAD
+// =====================================================
+
+loadData();
 
 </script>
 
