@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>NCPSC Library Status System</title>
+
+
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#ff9800,#f44336);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+    }
+
+    .container{
+      background:white;
+      width:100%;
+      max-width:500px;
+      padding:35px;
+      border-radius:20px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .logo{
+      text-align:center;
+      font-size:45px;
+      margin-bottom:10px;
+    }
+
+    h1{
+      text-align:center;
+      color:#e65100;
+      margin-bottom:10px;
+    }
+
+    p{
+      text-align:center;
+      color:#555;
+      margin-bottom:30px;
+    }
+
+    .input-group{
+      margin-bottom:20px;
+    }
+
+    label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:bold;
+      color:#333;
+    }
+
+    input,
+    select{
+      width:100%;
+      padding:14px;
+      border:2px solid #ddd;
+      border-radius:10px;
+      font-size:16px;
+      transition:0.3s;
+    }
+
+    input:focus,
+    select:focus{
+      outline:none;
+      border-color:#ff9800;
+      box-shadow:0 0 8px rgba(255,152,0,0.3);
+    }
+
+    button{
+      width:100%;
+      padding:15px;
+      border:none;
+      border-radius:10px;
+      background:linear-gradient(135deg,#ff9800,#f44336);
+      color:white;
+      font-size:17px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      opacity:0.95;
+      transform:translateY(-2px);
+    }
+
+    .message{
+      margin-top:20px;
+      text-align:center;
+      font-weight:bold;
+    }
+
+    .success{
+      color:green;
+    }
+
+    .error{
+      color:red;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="logo">📚</div>
+
+    <h1>NCPSC Library</h1>
+
+    <p>
+      Book Return / Lost / Damaged System
+    </p>
+
+
+
+    <form id="statusForm">
+
+      <div class="input-group">
+
+        <label>Book Code</label>
+
+        <input
+          type="text"
+          id="bookCode"
+          placeholder="Enter Book Code"
+          required
+        />
+
+      </div>
+
+
+
+      <div class="input-group">
+
+        <label>Borrower's ID</label>
+
+        <input
+          type="text"
+          id="borrowerId"
+          placeholder="Enter Borrower's ID"
+          required
+        />
+
+      </div>
+
+
+
+      <div class="input-group">
+
+        <label>Status</label>
+
+        <select id="status" required>
+
+          <option value="">
+            Select Status
+          </option>
+
+          <option value="Returned">
+            Returned
+          </option>
+
+          <option value="Lost">
+            Lost
+          </option>
+
+          <option value="Damaged">
+            Damaged
+          </option>
+
+        </select>
+
+      </div>
+
+
+
+      <button type="submit">
+        Save Status
+      </button>
+
+
+
+      <div
+        id="message"
+        class="message"
+      ></div>
+
+    </form>
+
+  </div>
+
+
+
+
+
+<script>
+
+
+
+// =====================================================
+// GOOGLE APPS SCRIPT WEB APP URL
+// =====================================================
+
+const SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
+
+
+
+
+// =====================================================
+// FORM
+// =====================================================
+
+const form =
+  document.getElementById("statusForm");
+
+const message =
+  document.getElementById("message");
+
+
+
+
+// =====================================================
+// SAVE STATUS
+// =====================================================
+
+form.addEventListener("submit", async (e)=>{
+
+  e.preventDefault();
+
+
+
+  const bookCode =
+    document.getElementById("bookCode")
+    .value
+    .trim();
+
+  const borrowerId =
+    document.getElementById("borrowerId")
+    .value
+    .trim();
+
+  const status =
+    document.getElementById("status")
+    .value;
+
+
+
+  message.innerHTML =
+    "Saving...";
+
+  message.className =
+    "message";
+
+
+
+  try{
+
+    const response =
+      await fetch(SCRIPT_URL,{
+
+        method:"POST",
+
+        body:JSON.stringify({
+
+          action:"updateStatus",
+
+          code:bookCode,
+
+          borrowerId:borrowerId,
+
+          status:status
+
+        })
+
+      });
+
+
+
+    const result =
+      await response.json();
+
+    console.log(result);
+
+
+
+    if(result.status === "success"){
+
+      message.innerHTML =
+        "✅ Status updated successfully!";
+
+      message.className =
+        "message success";
+
+
+
+      form.reset();
+
+    }
+    else{
+
+      message.innerHTML =
+        "❌ " + result.message;
+
+      message.className =
+        "message error";
+    }
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    message.innerHTML =
+      "❌ Failed to connect to server.";
+
+    message.className =
+      "message error";
+  }
+
+});
+
+</script>
+
+</body>
+</html>
