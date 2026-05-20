@@ -1,123 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NCPSC Library Status Update</title>
+<title>Library Status Panel</title>
 
 <style>
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+body{
+  font-family:Arial;
+  background:#ff9800;
+  padding:20px;
 }
 
-body {
-  background: linear-gradient(135deg,#ff9800,#f44336);
-  min-height: 100vh;
-  padding: 15px;
+.container{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  max-width:1200px;
+  margin:auto;
 }
 
-/* CONTAINER */
-.container {
-  max-width: 1200px;
-  margin: auto;
-  background: white;
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+table{
+  width:100%;
+  border-collapse:collapse;
 }
 
-h1 {
-  text-align: center;
-  color: #e65100;
-  font-size: 22px;
+th,td{
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:center;
 }
 
-p {
-  text-align: center;
-  color: #555;
-  margin-bottom: 20px;
-  font-size: 14px;
+th{
+  background:#e65100;
+  color:white;
 }
 
-.loading {
-  text-align: center;
-  font-size: 16px;
-  padding: 20px;
-  color: #555;
+select,button{
+  padding:6px;
 }
 
-/* TABLE WRAPPER (IMPORTANT FOR MOBILE) */
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-}
-
-/* TABLE */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 800px;
-}
-
-th {
-  background: #e65100;
-  color: white;
-  padding: 12px;
-  font-size: 14px;
-}
-
-td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
-  font-size: 13px;
-}
-
-tr:nth-child(even) {
-  background: #fff3e0;
-}
-
-/* SELECT */
-select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 13px;
-}
-
-/* BUTTON */
-button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  background: #e65100;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-/* MOBILE OPTIMIZATION */
-@media (max-width: 768px) {
-
-  .container {
-    padding: 15px;
-  }
-
-  table {
-    min-width: 700px;
-  }
-
+button{
+  background:#e65100;
+  color:white;
+  border:none;
+  cursor:pointer;
 }
 
 </style>
@@ -128,133 +58,93 @@ button:hover {
 
 <div class="container">
 
-  <h1>📚 NCPSC Library</h1>
-  <p>Update Book Status</p>
+<h2>📚 Library Status Panel</h2>
 
-  <div id="loading" class="loading">
-    Loading data...
-  </div>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Borrower</th>
+<th>Borrow Date</th>
+<th>Submit Date</th>
+<th>Book</th>
+<th>Price</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
 
-  <div class="table-wrapper">
+<tbody id="body"></tbody>
 
-    <table id="borrowTable" style="display:none;">
-
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Borrower</th>
-          <th>Borrow Date</th>
-          <th>Submission</th>
-          <th>Book</th>
-          <th>Price</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody id="tableBody"></tbody>
-
-    </table>
-
-  </div>
+</table>
 
 </div>
 
 <script>
 
-const SCRIPT_URL =
+const URL =
 "https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
 
-// LOAD DATA
-async function loadData() {
+async function load(){
 
-  try {
+  const res = await fetch(URL+"?action=getBorrowData");
+  const data = await res.json();
 
-    const response = await fetch(SCRIPT_URL + "?action=getBorrowed");
-    const result = await response.json();
+  let html = "";
 
-    const tableBody = document.getElementById("tableBody");
-    tableBody.innerHTML = "";
+  data.forEach((r,i)=>{
 
-    const data = result.data || [];
+    html += `
+    <tr>
+      <td>${r.code}</td>
+      <td>${r.borrowerId}</td>
+      <td>${r.borrowDate}</td>
+      <td>${r.submissionDate}</td>
+      <td>${r.bookName}</td>
+      <td>${r.price}</td>
 
-    data.forEach((row, index) => {
+      <td>
+        <select id="st${i}">
+          <option ${r.status=="Borrowed"?"selected":""}>Borrowed</option>
+          <option ${r.status=="Returned"?"selected":""}>Returned</option>
+          <option ${r.status=="Lost"?"selected":""}>Lost</option>
+          <option ${r.status=="Damaged"?"selected":""}>Damaged</option>
+        </select>
+      </td>
 
-      const tr = document.createElement("tr");
+      <td>
+        <button onclick="save('${r.code}','${r.borrowerId}',${i})">
+          Save
+        </button>
+      </td>
+    </tr>`;
+  });
 
-      tr.innerHTML = `
-        <td>${row.code}</td>
-        <td>${row.borrowerId}</td>
-        <td>${row.borrowDate}</td>
-        <td>${row.submissionDate}</td>
-        <td>${row.bookName}</td>
-        <td>${row.price}</td>
-
-        <td>
-          <select id="status-${index}">
-            <option value="Borrowed" ${row.status==="Borrowed"?"selected":""}>Borrowed</option>
-            <option value="Returned" ${row.status==="Returned"?"selected":""}>Returned</option>
-            <option value="Lost" ${row.status==="Lost"?"selected":""}>Lost</option>
-            <option value="Damaged" ${row.status==="Damaged"?"selected":""}>Damaged</option>
-          </select>
-        </td>
-
-        <td>
-          <button onclick="saveStatus('${row.code}','${row.borrowerId}',${index})">
-            Save
-          </button>
-        </td>
-      `;
-
-      tableBody.appendChild(tr);
-    });
-
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("borrowTable").style.display = "block";
-
-  } catch (error) {
-
-    console.error(error);
-    document.getElementById("loading").innerText = "Failed to load data.";
-  }
+  document.getElementById("body").innerHTML = html;
 }
 
-// SAVE STATUS
-async function saveStatus(code, borrowerId, index) {
+async function save(code,borrowerId,i){
 
-  const status = document.getElementById(`status-${index}`).value;
+  const status = document.getElementById("st"+i).value;
 
-  try {
+  await fetch(URL,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      action:"updateStatus",
+      code:code,
+      borrowerId:borrowerId,
+      status:status
+    })
+  });
 
-    const response = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        action: "updateStatus",
-        code: code,
-        borrowerId: borrowerId,
-        status: status
-      })
-    });
-
-    const result = await response.json();
-
-    if (result.status === "success") {
-      alert("✅ Updated successfully!");
-      loadData(); // refresh table
-    } else {
-      alert("❌ " + result.message);
-    }
-
-  } catch (error) {
-    console.error(error);
-    alert("❌ Update failed.");
-  }
+  alert("Updated!");
+  load();
 }
 
-loadData();
+load();
 
 </script>
 
