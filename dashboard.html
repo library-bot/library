@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Books Store</title>
+  <title>Books Dashboard</title>
 
   <style>
     body {
@@ -19,25 +19,23 @@
       background: white;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    h1 {
+    h1, h2 {
       text-align: center;
-      margin-bottom: 10px;
     }
 
-    /* Search box */
+    /* SEARCH */
     input {
       width: 100%;
       padding: 12px;
       margin: 10px 0 20px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      font-size: 16px;
     }
 
-    /* Table */
+    /* TABLE */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -48,7 +46,6 @@
       background: #007bff;
       color: white;
       padding: 12px;
-      text-align: left;
     }
 
     td {
@@ -60,7 +57,7 @@
       background: #f1f1f1;
     }
 
-    /* Status */
+    /* BADGE */
     .badge {
       padding: 5px 10px;
       border-radius: 20px;
@@ -72,37 +69,32 @@
     .sold { background: red; }
     .other { background: orange; }
 
-    /* Cards (mobile view) */
-    .cards {
-      display: none;
-      grid-template-columns: 1fr;
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 15px;
+      margin: 20px 0;
     }
 
-    .card {
-      background: #fff;
+    .stat-box {
+      background: white;
       padding: 15px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
     }
 
-    .card h3 {
-      margin: 0 0 5px;
+    .stat-box h3 {
+      margin: 0;
+      font-size: 16px;
     }
 
-    .row {
-      margin: 4px 0;
-      font-size: 14px;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      table {
-        display: none;
-      }
-      .cards {
-        display: grid;
-      }
+    .stat-box p {
+      font-size: 22px;
+      margin: 10px 0 0;
+      color: #007bff;
+      font-weight: bold;
     }
 
     .loading {
@@ -111,6 +103,25 @@
       font-size: 18px;
       color: #555;
     }
+
+    /* MOBILE CARDS */
+    .cards {
+      display: none;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 768px) {
+      table { display: none; }
+      .cards { display: grid; }
+    }
   </style>
 </head>
 
@@ -118,13 +129,18 @@
 
 <div class="container">
 
-  <h1>📚 Books Store</h1>
+  <h1>📚 Books Dashboard</h1>
 
-  <input type="text" id="search" placeholder="Search by name or code...">
+  <!-- STATS -->
+  <h2>📊 Statistics</h2>
+  <div id="stats" class="stats"></div>
 
-  <div id="loading" class="loading">Loading books...</div>
+  <!-- SEARCH -->
+  <input type="text" id="search" placeholder="Search books by name or code...">
 
-  <!-- TABLE VIEW -->
+  <div id="loading" class="loading">Loading data...</div>
+
+  <!-- TABLE -->
   <table id="table" style="display:none;">
     <thead>
       <tr>
@@ -138,7 +154,7 @@
     <tbody id="tbody"></tbody>
   </table>
 
-  <!-- CARD VIEW -->
+  <!-- CARDS -->
   <div class="cards" id="cards"></div>
 
 </div>
@@ -150,6 +166,7 @@ const API_URL =
 
 let booksData = [];
 
+/* LOAD BOOKS */
 fetch(API_URL)
   .then(res => res.text())
   .then(text => {
@@ -160,63 +177,81 @@ fetch(API_URL)
 
     document.getElementById("loading").style.display = "none";
     document.getElementById("table").style.display = "table";
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("loading").innerText =
-      "Failed to load books";
+
   });
 
+/* LOAD STATS */
+fetch(API_URL)
+  .then(res => res.text())
+  .then(text => {
+
+    const stats = JSON.parse(text);
+
+    const statsDiv = document.getElementById("stats");
+
+    let html = "";
+
+    stats.forEach(s => {
+      html += `
+        <div class="stat-box">
+          <h3>${s.TITLE}</h3>
+          <p>${s.VALUE}</p>
+        </div>
+      `;
+    });
+
+    statsDiv.innerHTML = html;
+  });
+
+/* RENDER BOOKS */
 function renderBooks(data) {
 
   const tbody = document.getElementById("tbody");
   const cards = document.getElementById("cards");
 
-  tbody.innerHTML = "";
-  cards.innerHTML = "";
+  let t = "";
+  let c = "";
 
   data.forEach(book => {
 
     let status = (book.STATUS || "").toLowerCase();
 
-    let badgeClass =
+    let badge =
       status === "available" ? "available" :
       status === "sold" ? "sold" : "other";
 
-    // TABLE ROW
-    tbody.innerHTML += `
+    t += `
       <tr>
         <td>${book["S/L"] || ""}</td>
         <td>${book["CODE"] || ""}</td>
         <td>${book["NAME"] || ""}</td>
         <td>${book["PRICE"] || ""}</td>
-        <td><span class="badge ${badgeClass}">${book.STATUS || ""}</span></td>
+        <td><span class="badge ${badge}">${book.STATUS || ""}</span></td>
       </tr>
     `;
 
-    // CARD VIEW
-    cards.innerHTML += `
+    c += `
       <div class="card">
         <h3>${book.NAME || ""}</h3>
-        <div class="row"><b>Code:</b> ${book.CODE || ""}</div>
-        <div class="row"><b>Price:</b> ${book.PRICE || ""}</div>
-        <div class="row">
-          <b>Status:</b>
-          <span class="badge ${badgeClass}">${book.STATUS || ""}</span>
-        </div>
+        <p><b>Code:</b> ${book.CODE}</p>
+        <p><b>Price:</b> ${book.PRICE}</p>
+        <p><b>Status:</b> <span class="badge ${badge}">${book.STATUS}</span></p>
       </div>
     `;
   });
+
+  tbody.innerHTML = t;
+  cards.innerHTML = c;
 }
 
-// SEARCH
-document.getElementById("search").addEventListener("input", function() {
+/* SEARCH */
+document.getElementById("search").addEventListener("input", function () {
 
   let value = this.value.toLowerCase();
 
-  let filtered = booksData.filter(book =>
-    (book.NAME || "").toLowerCase().includes(value) ||
-    (book.CODE || "").toLowerCase().includes(value)
+  let filtered = booksData.filter(b =>
+    (b.NAME || "").toLowerCase().includes(value) ||
+    (b.CODE || "").toLowerCase().includes(value)
   );
 
   renderBooks(filtered);
