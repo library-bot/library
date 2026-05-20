@@ -1,102 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NCPSC Library System</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Panel</title>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #0f4c75, #3282b8);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-        .container {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
-            width: 80%;
-            max-width: 700px;
-        }
+<style>
 
-        h1 {
-            font-size: 42px;
-            margin-bottom: 15px;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-        h2 {
-            font-size: 28px;
-            margin-bottom: 15px;
-            color: #ffd369;
-        }
+body{
+    font-family:'Poppins',sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#dbeafe,#ede9fe,#fef3c7);
+}
 
-        p {
-            font-size: 18px;
-            line-height: 1.6;
-        }
+.panel{
+    width:95%;
+    max-width:900px;
+    background:white;
+    padding:40px;
+    border-radius:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
 
-        .btn {
-            display: inline-block;
-            margin-top: 25px;
-            padding: 12px 25px;
-            background: #ffd369;
-            color: #000;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
+.title{
+    text-align:center;
+    font-size:32px;
+    font-weight:600;
+    color:#1e293b;
+    margin-bottom:35px;
+}
 
-        .btn:hover {
-            background: #ffffff;
-            color: #0f4c75;
-        }
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
 
-        .info {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #ddd;
-        }
-    </style>
+.btn{
+    border:none;
+    padding:25px;
+    border-radius:18px;
+    font-size:18px;
+    font-weight:500;
+    cursor:pointer;
+    transition:0.3s;
+    color:white;
+    box-shadow:0 6px 15px rgba(0,0,0,0.12);
+}
+
+.btn:hover{
+    transform:translateY(-5px) scale(1.03);
+}
+
+.btn1{background:linear-gradient(135deg,#3b82f6,#2563eb);}
+.btn2{background:linear-gradient(135deg,#10b981,#059669);}
+.btn3{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.btn4{background:linear-gradient(135deg,#ef4444,#dc2626);}
+.btn5{background:linear-gradient(135deg,#8b5cf6,#7c3aed);}
+.btn6{background:linear-gradient(135deg,#06b6d4,#0891b2);}
+
+.footer{
+    margin-top:30px;
+    text-align:center;
+    color:#64748b;
+    font-size:14px;
+}
+
+</style>
 </head>
+
 <body>
 
-    <div class="container">
-        <h1>Welcome</h1>
+<div class="panel">
 
-        <h2>Nirjhor Cantonment Public School & College</h2>
-        <h2>Library Management System</h2>
-
-        <p>
-            Press the <strong>Enter</strong> button below to access
-            the Library Admin Panel of NCPSC.
-        </p>
-
-        <!-- Change admin-panel.html to your actual admin panel page -->
-        <a href="admin-panel.html" class="btn">Enter</a>
-
-        <div class="info">
-            Redirecting to Library Admin Panel...
-        </div>
+    <div class="title">
+        NCPSC Admin Panel
     </div>
 
-    <script>
-        // Auto redirect when Enter key is pressed
-        document.addEventListener("keydown", function(event) {
-            if (event.key === "Enter") {
-                window.location.href = "admin-panel.html";
-            }
-        });
-    </script>
+    <div class="grid">
+
+        <button class="btn btn1" onclick="goSite()">
+            Dashboard
+        </button>
+
+        <button class="btn btn2" onclick="goSite()">
+            Students
+        </button>
+
+        <button class="btn btn3" onclick="goSite()">
+            Teachers
+        </button>
+
+        <button class="btn btn4" onclick="goSite()">
+            Attendance
+        </button>
+
+        <button class="btn btn5" onclick="goSite()">
+            Results
+        </button>
+
+        <button class="btn btn6" onclick="goSite()">
+            Settings
+        </button>
+
+    </div>
+
+    <div class="footer">
+        © NCP School & College Admin System
+    </div>
+
+</div>
+
+<script>
+
+function goSite(){
+    window.location.href = "https://ncpsc.edu.bd";
+}
+
+</script>
 
 </body>
 </html>
