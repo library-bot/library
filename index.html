@@ -48,11 +48,31 @@
             padding:30px;
         }
 
+        /* BIG TITLE */
+
+        h2{
+
+            font-size: clamp(40px, 5vw, 95px);
+
+            font-weight:900;
+
+            text-transform:uppercase;
+
+            color:#0f172a;
+
+            margin-bottom:20px;
+
+            letter-spacing:3px;
+
+            text-shadow:
+                3px 3px 0px #60a5fa;
+        }
+
+        /* SCHOOL NAME */
+
         h1{
 
-            width:100%;
-
-            font-size:clamp(26px, 3vw, 72px);
+            font-size:clamp(26px, 3.5vw, 72px);
 
             color:#2b5d8a;
 
@@ -60,23 +80,14 @@
 
             text-transform:uppercase;
 
+            white-space:nowrap;
+
             line-height:1.2;
 
-            margin-bottom:30px;
+            margin-bottom:50px;
         }
 
-        h2{
-
-            font-size:clamp(22px, 2.5vw, 42px);
-
-            color:#4a90e2;
-
-            font-weight:600;
-
-            margin-bottom:45px;
-
-            text-transform:uppercase;
-        }
+        /* BUTTON */
 
         .btn{
 
@@ -120,6 +131,13 @@
             text-transform:uppercase;
         }
 
+        @media(max-width:900px){
+
+            h1{
+                white-space:normal;
+            }
+        }
+
     </style>
 </head>
 
@@ -127,13 +145,13 @@
 
     <div class="container">
 
-        <h1>
-            NIRJHOR CANTONMENT PUBLIC SCHOOL & COLLEGE
-        </h1>
-
         <h2>
             LIBRARY MANAGEMENT SYSTEM
         </h2>
+
+        <h1>
+            NIRJHOR CANTONMENT PUBLIC SCHOOL & COLLEGE
+        </h1>
 
         <a href="admin-panel.html" class="btn">
             ENTER LIBRARY ADMIN PANEL
