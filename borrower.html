@@ -28,7 +28,7 @@ body{
 
 .container{
   width:100%;
-  max-width:650px;
+  max-width:500px;
   background:#ffffff;
   padding:40px;
   border-radius:25px;
@@ -37,7 +37,7 @@ body{
 
 .title{
   text-align:center;
-  font-size:38px;
+  font-size:36px;
   font-weight:bold;
   color:#1d4ed8;
   margin-bottom:10px;
@@ -51,7 +51,7 @@ body{
 }
 
 .input-group{
-  margin-bottom:20px;
+  margin-bottom:25px;
 }
 
 label{
@@ -63,7 +63,7 @@ label{
 
 input{
   width:100%;
-  padding:15px;
+  padding:16px;
   border:2px solid #cbd5e1;
   border-radius:12px;
   font-size:16px;
@@ -74,10 +74,6 @@ input{
 input:focus{
   border-color:#2563eb;
   box-shadow:0 0 10px rgba(37,99,235,0.2);
-}
-
-.readonly{
-  background:#f1f5f9;
 }
 
 button{
@@ -132,42 +128,22 @@ button:hover{
 
     <div class="input-group">
       <label>Book Code</label>
-      <input type="text" id="code" required>
-    </div>
-
-    <div class="input-group">
-      <label>Book Name</label>
       <input
         type="text"
-        id="bookName"
-        class="readonly"
-        readonly
-      >
-    </div>
-
-    <div class="input-group">
-      <label>Price</label>
-      <input
-        type="number"
-        id="price"
-        class="readonly"
-        readonly
+        id="code"
+        placeholder="Enter Book Code"
+        required
       >
     </div>
 
     <div class="input-group">
       <label>Borrower's ID</label>
-      <input type="text" id="borrowerId" required>
-    </div>
-
-    <div class="input-group">
-      <label>Borrow Date</label>
-      <input type="date" id="borrowDate" required>
-    </div>
-
-    <div class="input-group">
-      <label>Submission Date</label>
-      <input type="date" id="submissionDate" required>
+      <input
+        type="text"
+        id="borrowerId"
+        placeholder="Enter Borrower's ID"
+        required
+      >
     </div>
 
     <button type="submit">
@@ -187,80 +163,6 @@ const WEB_APP_URL =
 
 
 
-
-// SEARCH BOOK CODE
-
-document.getElementById("code")
-.addEventListener("keyup", async function(){
-
-  const code = this.value.trim();
-
-  if(code === ""){
-
-    document.getElementById("bookName").value = "";
-    document.getElementById("price").value = "";
-
-    return;
-  }
-
-  try{
-
-    const response = await fetch(
-
-      WEB_APP_URL +
-      "?action=getBook&code=" +
-      encodeURIComponent(code)
-
-    );
-
-    const result = await response.json();
-
-    if(result.success){
-
-      if(
-        String(result.status).toLowerCase()
-        === "borrowed"
-      ){
-
-        document.getElementById("bookName").value =
-        "Book Already Borrowed";
-
-        document.getElementById("price").value = "";
-
-        return;
-      }
-
-      document.getElementById("bookName").value =
-      result.bookName;
-
-      document.getElementById("price").value =
-      result.price;
-
-    }else{
-
-      document.getElementById("bookName").value =
-      "Book Not Found";
-
-      document.getElementById("price").value = "";
-    }
-
-  }catch(error){
-
-    document.getElementById("bookName").value =
-    "Connection Error";
-
-    document.getElementById("price").value = "";
-  }
-
-});
-
-
-
-
-
-
-// SAVE BORROW DATA
-
 document.getElementById("borrowForm")
 .addEventListener("submit", async function(e){
 
@@ -274,19 +176,7 @@ document.getElementById("borrowForm")
       document.getElementById("code").value,
 
     borrowerId:
-      document.getElementById("borrowerId").value,
-
-    borrowDate:
-      document.getElementById("borrowDate").value,
-
-    submissionDate:
-      document.getElementById("submissionDate").value,
-
-    bookName:
-      document.getElementById("bookName").value,
-
-    price:
-      document.getElementById("price").value
+      document.getElementById("borrowerId").value
 
   };
 
@@ -315,9 +205,6 @@ document.getElementById("borrowForm")
 
       document.getElementById("borrowForm").reset();
 
-      document.getElementById("bookName").value = "";
-      document.getElementById("price").value = "";
-
     }else{
 
       message.innerHTML =
@@ -341,4 +228,5 @@ document.getElementById("borrowForm")
 </script>
 
 </body>
+
 </html>
