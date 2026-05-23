@@ -4,7 +4,8 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>Library Management System</title>
 
@@ -22,17 +23,24 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background:linear-gradient(135deg,#dbeafe,#eff6ff,#ffffff);
+  background:
+  linear-gradient(
+    135deg,
+    #dbeafe,
+    #eff6ff,
+    #ffffff
+  );
   padding:20px;
 }
 
 .container{
   width:100%;
-  max-width:520px;
+  max-width:500px;
   background:white;
   padding:40px;
   border-radius:25px;
-  box-shadow:0 10px 35px rgba(0,0,0,0.1);
+  box-shadow:
+  0 10px 35px rgba(0,0,0,0.1);
 }
 
 .title{
@@ -74,7 +82,8 @@ input{
 
 input:focus{
   border-color:#2563eb;
-  box-shadow:0 0 10px rgba(37,99,235,0.2);
+  box-shadow:
+  0 0 10px rgba(37,99,235,0.2);
 }
 
 button{
@@ -109,26 +118,6 @@ button:hover{
   color:red;
 }
 
-.book-preview{
-  margin-top:15px;
-  padding:15px;
-  background:#f8fafc;
-  border-radius:12px;
-  border:1px solid #cbd5e1;
-  display:none;
-}
-
-.book-preview p{
-  margin-bottom:8px;
-  color:#1e293b;
-  font-size:15px;
-}
-
-.book-preview span{
-  font-weight:bold;
-  color:#2563eb;
-}
-
 </style>
 
 </head>
@@ -160,20 +149,6 @@ button:hover{
 
     </div>
 
-    <div class="book-preview" id="bookPreview">
-
-      <p>
-        Book Name:
-        <span id="previewName"></span>
-      </p>
-
-      <p>
-        Price:
-        <span id="previewPrice"></span>
-      </p>
-
-    </div>
-
     <div class="input-group">
 
       <label>Borrower's ID</label>
@@ -193,7 +168,8 @@ button:hover{
 
   </form>
 
-  <div id="message" class="message"></div>
+  <div id="message"
+  class="message"></div>
 
 </div>
 
@@ -205,117 +181,56 @@ const WEB_APP_URL =
 
 
 
-// SEARCH BOOK
-
-document.getElementById("code")
-.addEventListener("keyup", async function(){
-
-  const code = this.value.trim();
-
-  const preview =
-    document.getElementById("bookPreview");
-
-  if(code === ""){
-
-    preview.style.display = "none";
-
-    return;
-  }
-
-  try{
-
-    const response = await fetch(
-
-      WEB_APP_URL +
-      "?action=getBook&code=" +
-      encodeURIComponent(code)
-
-    );
-
-    const result = await response.json();
-
-    if(result.success){
-
-      document.getElementById("previewName")
-        .innerHTML = result.bookName;
-
-      document.getElementById("previewPrice")
-        .innerHTML = result.price;
-
-      preview.style.display = "block";
-
-    }else{
-
-      document.getElementById("previewName")
-        .innerHTML = "Book Not Found";
-
-      document.getElementById("previewPrice")
-        .innerHTML = "";
-
-      preview.style.display = "block";
-    }
-
-  }catch(error){
-
-    document.getElementById("previewName")
-      .innerHTML = "Connection Error";
-
-    document.getElementById("previewPrice")
-      .innerHTML = "";
-
-    preview.style.display = "block";
-  }
-
-});
-
-
-
-
-
-
-// SAVE DATA
 
 document.getElementById("borrowForm")
-.addEventListener("submit", async function(e){
+.addEventListener(
+  "submit",
+  async function(e){
 
   e.preventDefault();
 
   const message =
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
 
 
 
   const data = {
 
     code:
-      document.getElementById("code")
-      .value
-      .trim(),
+      document.getElementById(
+        "code"
+      ).value.trim(),
 
     borrowerId:
-      document.getElementById("borrowerId")
-      .value
-      .trim()
+      document.getElementById(
+        "borrowerId"
+      ).value.trim()
 
   };
 
 
 
-  message.innerHTML = "Saving...";
-  message.className = "message";
+  message.innerHTML =
+    "Saving...";
+
+  message.className =
+    "message";
 
 
 
   try{
 
-    const response = await fetch(
-      WEB_APP_URL,
-      {
-        method:"POST",
+    const response =
+      await fetch(
+        WEB_APP_URL,
+        {
+          method:"POST",
 
-        body:JSON.stringify(data)
-      }
-    );
+          body:JSON.stringify(data)
+        }
+      );
 
 
 
@@ -324,7 +239,9 @@ document.getElementById("borrowForm")
 
 
 
-    if(result.includes("Success")){
+    if(
+      result.includes("Success")
+    ){
 
       message.innerHTML =
         "✅ Data Saved Successfully";
@@ -332,11 +249,9 @@ document.getElementById("borrowForm")
       message.className =
         "message success";
 
-      document.getElementById("borrowForm")
-        .reset();
-
-      document.getElementById("bookPreview")
-        .style.display = "none";
+      document.getElementById(
+        "borrowForm"
+      ).reset();
 
     }else{
 
