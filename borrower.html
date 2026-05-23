@@ -1,111 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Library Borrow System</title>
 
 <style>
-  *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
-  }
 
-  body{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:linear-gradient(135deg,#dbeafe,#eff6ff,#ffffff);
-    padding:20px;
-  }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
 
-  .container{
-    width:100%;
-    max-width:500px;
-    background:#ffffff;
-    border-radius:20px;
-    padding:40px 30px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  }
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#dbeafe,#f8fafc,#ffffff);
+  padding:20px;
+}
 
-  .title{
-    text-align:center;
-    font-size:34px;
-    font-weight:bold;
-    color:#1e3a8a;
-    margin-bottom:10px;
-  }
+.container{
+  width:100%;
+  max-width:650px;
+  background:white;
+  border-radius:25px;
+  padding:40px;
+  box-shadow:0 10px 35px rgba(0,0,0,0.1);
+}
 
-  .subtitle{
-    text-align:center;
-    font-size:16px;
-    color:#475569;
-    margin-bottom:35px;
-  }
+.title{
+  text-align:center;
+  font-size:36px;
+  font-weight:bold;
+  color:#1d4ed8;
+  margin-bottom:10px;
+}
 
-  .input-group{
-    margin-bottom:25px;
-  }
+.subtitle{
+  text-align:center;
+  color:#475569;
+  margin-bottom:35px;
+  font-size:18px;
+}
 
-  label{
-    display:block;
-    margin-bottom:8px;
-    font-size:15px;
-    font-weight:bold;
-    color:#1e293b;
-  }
+.input-group{
+  margin-bottom:20px;
+}
 
-  input{
-    width:100%;
-    padding:15px;
-    border:2px solid #cbd5e1;
-    border-radius:12px;
-    font-size:16px;
-    transition:0.3s;
-    outline:none;
-  }
+label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:bold;
+  color:#1e293b;
+}
 
-  input:focus{
-    border-color:#2563eb;
-    box-shadow:0 0 10px rgba(37,99,235,0.2);
-  }
+input{
+  width:100%;
+  padding:15px;
+  border:2px solid #cbd5e1;
+  border-radius:12px;
+  font-size:16px;
+  outline:none;
+}
 
-  button{
-    width:100%;
-    padding:16px;
-    border:none;
-    border-radius:12px;
-    background:#2563eb;
-    color:white;
-    font-size:18px;
-    font-weight:bold;
-    cursor:pointer;
-    transition:0.3s;
-  }
+input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 10px rgba(37,99,235,0.2);
+}
 
-  button:hover{
-    background:#1d4ed8;
-  }
+.readonly{
+  background:#f1f5f9;
+}
 
-  .message{
-    margin-top:20px;
-    text-align:center;
-    font-size:16px;
-    font-weight:bold;
-  }
+button{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  background:#2563eb;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
 
-  .success{
-    color:green;
-  }
+button:hover{
+  background:#1d4ed8;
+}
 
-  .error{
-    color:red;
-  }
+.message{
+  margin-top:20px;
+  text-align:center;
+  font-size:17px;
+  font-weight:bold;
+}
+
+.success{
+  color:green;
+}
+
+.error{
+  color:red;
+}
+
 </style>
+
 </head>
 
 <body>
@@ -117,19 +123,39 @@
   </div>
 
   <div class="subtitle">
-    Borrow Book Entry
+    Borrow Book Entry Form
   </div>
 
   <form id="borrowForm">
 
     <div class="input-group">
       <label>Book Code</label>
-      <input type="text" id="code" placeholder="Enter Book Code" required />
+      <input type="text" id="code" required>
+    </div>
+
+    <div class="input-group">
+      <label>Book Name</label>
+      <input type="text" id="bookName" class="readonly" readonly>
     </div>
 
     <div class="input-group">
       <label>Borrower's ID</label>
-      <input type="text" id="borrowerId" placeholder="Enter Borrower's ID" required />
+      <input type="text" id="borrowerId" required>
+    </div>
+
+    <div class="input-group">
+      <label>Borrow Date</label>
+      <input type="date" id="borrowDate" required>
+    </div>
+
+    <div class="input-group">
+      <label>Submission Date</label>
+      <input type="date" id="submissionDate" required>
+    </div>
+
+    <div class="input-group">
+      <label>Price</label>
+      <input type="number" id="price" required>
     </div>
 
     <button type="submit">
@@ -144,16 +170,73 @@
 
 <script>
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
 
-document.getElementById("borrowForm").addEventListener("submit", async function(e){
+
+
+document.getElementById("code")
+.addEventListener("keyup", async function(){
+
+  const code = this.value.trim();
+
+  if(code === ""){
+
+    document.getElementById("bookName").value = "";
+    return;
+  }
+
+  try{
+
+    const response = await fetch(
+      WEB_APP_URL + "?action=getBook&code=" + encodeURIComponent(code)
+    );
+
+    const result = await response.json();
+
+    if(result.success){
+
+      document.getElementById("bookName").value =
+      result.bookName;
+
+    }else{
+
+      document.getElementById("bookName").value =
+      "Book Not Found";
+    }
+
+  }catch(err){
+
+    document.getElementById("bookName").value =
+    "Connection Error";
+  }
+
+});
+
+
+
+document.getElementById("borrowForm")
+.addEventListener("submit", async function(e){
 
   e.preventDefault();
 
-  const code = document.getElementById("code").value.trim();
-  const borrowerId = document.getElementById("borrowerId").value.trim();
-
   const message = document.getElementById("message");
+
+  const data = {
+
+    code:document.getElementById("code").value,
+
+    borrowerId:document.getElementById("borrowerId").value,
+
+    borrowDate:document.getElementById("borrowDate").value,
+
+    submissionDate:document.getElementById("submissionDate").value,
+
+    bookName:document.getElementById("bookName").value,
+
+    price:document.getElementById("price").value
+
+  };
 
   message.innerHTML = "Saving...";
   message.className = "message";
@@ -162,34 +245,37 @@ document.getElementById("borrowForm").addEventListener("submit", async function(
 
     const response = await fetch(WEB_APP_URL,{
       method:"POST",
-      body:JSON.stringify({
-        action:"saveBorrow",
-        code:code,
-        borrowerId:borrowerId
-      })
+      body:JSON.stringify(data)
     });
 
     const result = await response.text();
 
     if(result.includes("Success")){
 
-      message.innerHTML = "✅ Data Saved Successfully";
-      message.className = "message success";
+      message.innerHTML =
+      "✅ Data Saved Successfully";
+
+      message.className =
+      "message success";
 
       document.getElementById("borrowForm").reset();
 
     }else{
 
-      message.innerHTML = "❌ Failed To Save Data";
-      message.className = "message error";
+      message.innerHTML =
+      "❌ Failed To Save Data";
 
+      message.className =
+      "message error";
     }
 
   }catch(error){
 
-    message.innerHTML = "❌ Server Connection Failed";
-    message.className = "message error";
+    message.innerHTML =
+    "❌ Server Connection Failed";
 
+    message.className =
+    "message error";
   }
 
 });
