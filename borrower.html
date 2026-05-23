@@ -76,6 +76,10 @@ input:focus{
   box-shadow:0 0 10px rgba(37,99,235,0.2);
 }
 
+.readonly{
+  background:#f1f5f9;
+}
+
 button{
   width:100%;
   padding:16px;
@@ -137,6 +141,16 @@ button:hover{
     </div>
 
     <div class="input-group">
+      <label>Book Name</label>
+      <input
+        type="text"
+        id="bookName"
+        class="readonly"
+        readonly
+      >
+    </div>
+
+    <div class="input-group">
       <label>Borrower's ID</label>
       <input
         type="text"
@@ -162,6 +176,58 @@ const WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
 
 
+
+
+// SEARCH BOOK NAME FROM CODE
+
+document.getElementById("code")
+.addEventListener("keyup", async function(){
+
+  const code = this.value.trim();
+
+  if(code === ""){
+
+    document.getElementById("bookName").value = "";
+    return;
+  }
+
+  try{
+
+    const response = await fetch(
+
+      WEB_APP_URL +
+      "?action=getBook&code=" +
+      encodeURIComponent(code)
+
+    );
+
+    const result = await response.json();
+
+    if(result.success){
+
+      document.getElementById("bookName").value =
+      result.bookName;
+
+    }else{
+
+      document.getElementById("bookName").value =
+      "Book Not Found";
+    }
+
+  }catch(error){
+
+    document.getElementById("bookName").value =
+    "Connection Error";
+  }
+
+});
+
+
+
+
+
+
+// SAVE DATA
 
 document.getElementById("borrowForm")
 .addEventListener("submit", async function(e){
@@ -204,6 +270,8 @@ document.getElementById("borrowForm")
       "message success";
 
       document.getElementById("borrowForm").reset();
+
+      document.getElementById("bookName").value = "";
 
     }else{
 
