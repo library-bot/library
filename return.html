@@ -1,26 +1,139 @@
-function doGet() {
+<!DOCTYPE html>
+<html lang="en">
 
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName("BORROW");
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  const data = sheet.getDataRange().getValues();
+<title>Borrowed Books Dashboard</title>
 
-  let result = [];
+<style>
 
-  for (let i = 1; i < data.length; i++) {
-
-    result.push({
-      code: data[i][0],
-      borrowerId: data[i][1],
-      borrowDate: data[i][2],
-      submissionDate: data[i][3],
-      bookName: data[i][4],
-      price: data[i][5],
-      status: data[i][6]
-    });
-  }
-
-  return ContentService
-    .createTextOutput(JSON.stringify(result))
-    .setMimeType(ContentService.MimeType.JSON);
+body{
+  font-family:Arial;
+  margin:0;
+  padding:20px;
+  background:linear-gradient(135deg,#dbeafe,#f8fafc);
 }
+
+.title{
+  text-align:center;
+  font-size:32px;
+  font-weight:bold;
+  color:#1d4ed8;
+  margin-bottom:20px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+th{
+  background:#2563eb;
+  color:white;
+  padding:12px;
+  font-size:14px;
+}
+
+td{
+  padding:12px;
+  border-bottom:1px solid #e2e8f0;
+  text-align:center;
+  font-size:14px;
+}
+
+tr:hover{
+  background:#f1f5f9;
+}
+
+.status{
+  font-weight:bold;
+  color:green;
+}
+
+button{
+  margin-bottom:15px;
+  padding:10px 15px;
+  background:#1d4ed8;
+  color:white;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#2563eb;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="title">📚 Borrowed Books List</div>
+
+<center>
+<button onclick="loadData()">🔄 Refresh</button>
+</center>
+
+<table>
+
+<thead>
+<tr>
+  <th>Code</th>
+  <th>Borrower ID</th>
+  <th>Borrow Date</th>
+  <th>Return Date</th>
+  <th>Book Name</th>
+  <th>Price</th>
+  <th>Status</th>
+</tr>
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+<script>
+
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
+
+async function loadData(){
+
+  const res = await fetch(WEB_APP_URL);
+  const data = await res.json();
+
+  let rows = "";
+
+  data.forEach(item => {
+
+    rows += `
+      <tr>
+        <td>${item.code}</td>
+        <td>${item.borrowerId}</td>
+        <td>${item.borrowDate}</td>
+        <td>${item.submissionDate}</td>
+        <td>${item.bookName}</td>
+        <td>${item.price}</td>
+        <td class="status">${item.status}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("tableBody").innerHTML = rows;
+}
+
+// auto load
+loadData();
+
+</script>
+
+</body>
+</html>
