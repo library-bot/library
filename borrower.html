@@ -1,169 +1,365 @@
-function doPost(e) {
+<!DOCTYPE html>
+<html lang="en">
 
-  try {
+<head>
 
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    const borrowSheet =
-      ss.getSheetByName("BORROW");
+<title>Library Management System</title>
 
-    const booksSheet =
-      ss.getSheetByName("BOOKS");
+<style>
 
-
-
-    const data =
-      JSON.parse(e.postData.contents);
-
-
-
-    const code =
-      String(data.code).trim();
-
-    const borrowerId =
-      String(data.borrowerId).trim();
-
-
-
-
-    // TODAY DATE
-
-    const today = new Date();
-
-
-
-
-    // ADD 5 WORKING DAYS
-
-    let submissionDate =
-      new Date(today);
-
-    let count = 0;
-
-    while (count < 5) {
-
-      submissionDate.setDate(
-        submissionDate.getDate() + 1
-      );
-
-      const day =
-        submissionDate.getDay();
-
-      // Skip Friday and Saturday
-
-      if (day !== 5 && day !== 6) {
-
-        count++;
-      }
-    }
-
-
-
-
-    // SEARCH BOOKS SHEET
-
-    const booksData =
-      booksSheet.getDataRange().getValues();
-
-    let bookName = "";
-    let price = "";
-
-
-
-    for (let i = 1; i < booksData.length; i++) {
-
-      // BOOKS SHEET
-      // A = S/L
-      // B = CODE
-      // C = BOOK NAME
-      // D = STATUS
-      // E = PRICE
-
-      const bookCode =
-        String(booksData[i][1]).trim();
-
-      if (bookCode === code) {
-
-        bookName =
-          booksData[i][2];
-
-        price =
-          booksData[i][4];
-
-
-
-        // UPDATE STATUS
-
-        booksSheet
-          .getRange(i + 1, 4)
-          .setValue("Borrowed");
-
-        break;
-      }
-    }
-
-
-
-
-    // IF BOOK NOT FOUND
-
-    if (bookName === "") {
-
-      return ContentService
-        .createTextOutput("Book Not Found")
-        .setMimeType(
-          ContentService.MimeType.TEXT
-        );
-    }
-
-
-
-
-    // SAVE TO BORROW SHEET
-
-    borrowSheet.appendRow([
-
-      code,
-
-      borrowerId,
-
-      Utilities.formatDate(
-        today,
-        Session.getScriptTimeZone(),
-        "dd-MMM-yyyy"
-      ),
-
-      Utilities.formatDate(
-        submissionDate,
-        Session.getScriptTimeZone(),
-        "dd-MMM-yyyy"
-      ),
-
-      bookName,
-
-      price,
-
-      "Borrowed"
-
-    ]);
-
-
-
-
-    return ContentService
-      .createTextOutput("Success")
-      .setMimeType(
-        ContentService.MimeType.TEXT
-      );
-
-
-
-  } catch(err) {
-
-    return ContentService
-      .createTextOutput(err.toString())
-      .setMimeType(
-        ContentService.MimeType.TEXT
-      );
-  }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
 }
+
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#dbeafe,#eff6ff,#ffffff);
+  padding:20px;
+}
+
+.container{
+  width:100%;
+  max-width:520px;
+  background:white;
+  padding:40px;
+  border-radius:25px;
+  box-shadow:0 10px 35px rgba(0,0,0,0.1);
+}
+
+.title{
+  text-align:center;
+  font-size:38px;
+  font-weight:bold;
+  color:#1d4ed8;
+  margin-bottom:10px;
+}
+
+.subtitle{
+  text-align:center;
+  font-size:18px;
+  color:#64748b;
+  margin-bottom:35px;
+}
+
+.input-group{
+  margin-bottom:25px;
+}
+
+label{
+  display:block;
+  margin-bottom:8px;
+  font-size:16px;
+  font-weight:bold;
+  color:#1e293b;
+}
+
+input{
+  width:100%;
+  padding:16px;
+  border:2px solid #cbd5e1;
+  border-radius:12px;
+  font-size:16px;
+  outline:none;
+  transition:0.3s;
+}
+
+input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 10px rgba(37,99,235,0.2);
+}
+
+button{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  background:#2563eb;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#1d4ed8;
+}
+
+.message{
+  margin-top:20px;
+  text-align:center;
+  font-size:17px;
+  font-weight:bold;
+}
+
+.success{
+  color:green;
+}
+
+.error{
+  color:red;
+}
+
+.book-preview{
+  margin-top:15px;
+  padding:15px;
+  background:#f8fafc;
+  border-radius:12px;
+  border:1px solid #cbd5e1;
+  display:none;
+}
+
+.book-preview p{
+  margin-bottom:8px;
+  color:#1e293b;
+  font-size:15px;
+}
+
+.book-preview span{
+  font-weight:bold;
+  color:#2563eb;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="title">
+    LIBRARY MANAGEMENT SYSTEM
+  </div>
+
+  <div class="subtitle">
+    Borrow Book Entry
+  </div>
+
+  <form id="borrowForm">
+
+    <div class="input-group">
+
+      <label>Book Code</label>
+
+      <input
+        type="text"
+        id="code"
+        placeholder="Enter Book Code"
+        required
+      >
+
+    </div>
+
+    <div class="book-preview" id="bookPreview">
+
+      <p>
+        Book Name:
+        <span id="previewName"></span>
+      </p>
+
+      <p>
+        Price:
+        <span id="previewPrice"></span>
+      </p>
+
+    </div>
+
+    <div class="input-group">
+
+      <label>Borrower's ID</label>
+
+      <input
+        type="text"
+        id="borrowerId"
+        placeholder="Enter Borrower's ID"
+        required
+      >
+
+    </div>
+
+    <button type="submit">
+      SAVE DATA
+    </button>
+
+  </form>
+
+  <div id="message" class="message"></div>
+
+</div>
+
+<script>
+
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
+
+
+
+
+// SEARCH BOOK
+
+document.getElementById("code")
+.addEventListener("keyup", async function(){
+
+  const code = this.value.trim();
+
+  const preview =
+    document.getElementById("bookPreview");
+
+  if(code === ""){
+
+    preview.style.display = "none";
+
+    return;
+  }
+
+  try{
+
+    const response = await fetch(
+
+      WEB_APP_URL +
+      "?action=getBook&code=" +
+      encodeURIComponent(code)
+
+    );
+
+    const result = await response.json();
+
+    if(result.success){
+
+      document.getElementById("previewName")
+        .innerHTML = result.bookName;
+
+      document.getElementById("previewPrice")
+        .innerHTML = result.price;
+
+      preview.style.display = "block";
+
+    }else{
+
+      document.getElementById("previewName")
+        .innerHTML = "Book Not Found";
+
+      document.getElementById("previewPrice")
+        .innerHTML = "";
+
+      preview.style.display = "block";
+    }
+
+  }catch(error){
+
+    document.getElementById("previewName")
+      .innerHTML = "Connection Error";
+
+    document.getElementById("previewPrice")
+      .innerHTML = "";
+
+    preview.style.display = "block";
+  }
+
+});
+
+
+
+
+
+
+// SAVE DATA
+
+document.getElementById("borrowForm")
+.addEventListener("submit", async function(e){
+
+  e.preventDefault();
+
+  const message =
+    document.getElementById("message");
+
+
+
+  const data = {
+
+    code:
+      document.getElementById("code")
+      .value
+      .trim(),
+
+    borrowerId:
+      document.getElementById("borrowerId")
+      .value
+      .trim()
+
+  };
+
+
+
+  message.innerHTML = "Saving...";
+  message.className = "message";
+
+
+
+  try{
+
+    const response = await fetch(
+      WEB_APP_URL,
+      {
+        method:"POST",
+
+        body:JSON.stringify(data)
+      }
+    );
+
+
+
+    const result =
+      await response.text();
+
+
+
+    if(result.includes("Success")){
+
+      message.innerHTML =
+        "✅ Data Saved Successfully";
+
+      message.className =
+        "message success";
+
+      document.getElementById("borrowForm")
+        .reset();
+
+      document.getElementById("bookPreview")
+        .style.display = "none";
+
+    }else{
+
+      message.innerHTML =
+        "❌ " + result;
+
+      message.className =
+        "message error";
+    }
+
+  }catch(error){
+
+    message.innerHTML =
+      "❌ Server Connection Failed";
+
+    message.className =
+      "message error";
+  }
+
+});
+
+</script>
+
+</body>
+
+</html>
