@@ -29,7 +29,7 @@ body{
 .container{
   width:100%;
   max-width:500px;
-  background:#ffffff;
+  background:white;
   padding:40px;
   border-radius:25px;
   box-shadow:0 10px 35px rgba(0,0,0,0.1);
@@ -37,7 +37,7 @@ body{
 
 .title{
   text-align:center;
-  font-size:36px;
+  font-size:38px;
   font-weight:bold;
   color:#1d4ed8;
   margin-bottom:10px;
@@ -46,7 +46,7 @@ body{
 .subtitle{
   text-align:center;
   font-size:18px;
-  color:#475569;
+  color:#64748b;
   margin-bottom:35px;
 }
 
@@ -74,10 +74,6 @@ input{
 input:focus{
   border-color:#2563eb;
   box-shadow:0 0 10px rgba(37,99,235,0.2);
-}
-
-.readonly{
-  background:#f1f5f9;
 }
 
 button{
@@ -132,6 +128,7 @@ button:hover{
 
     <div class="input-group">
       <label>Book Code</label>
+
       <input
         type="text"
         id="code"
@@ -141,17 +138,8 @@ button:hover{
     </div>
 
     <div class="input-group">
-      <label>Book Name</label>
-      <input
-        type="text"
-        id="bookName"
-        class="readonly"
-        readonly
-      >
-    </div>
-
-    <div class="input-group">
       <label>Borrower's ID</label>
+
       <input
         type="text"
         id="borrowerId"
@@ -177,77 +165,36 @@ const WEB_APP_URL =
 
 
 
-
-// SEARCH BOOK NAME FROM CODE
-
-document.getElementById("code")
-.addEventListener("keyup", async function(){
-
-  const code = this.value.trim();
-
-  if(code === ""){
-
-    document.getElementById("bookName").value = "";
-    return;
-  }
-
-  try{
-
-    const response = await fetch(
-
-      WEB_APP_URL +
-      "?action=getBook&code=" +
-      encodeURIComponent(code)
-
-    );
-
-    const result = await response.json();
-
-    if(result.success){
-
-      document.getElementById("bookName").value =
-      result.bookName;
-
-    }else{
-
-      document.getElementById("bookName").value =
-      "Book Not Found";
-    }
-
-  }catch(error){
-
-    document.getElementById("bookName").value =
-    "Connection Error";
-  }
-
-});
-
-
-
-
-
-
-// SAVE DATA
-
 document.getElementById("borrowForm")
 .addEventListener("submit", async function(e){
 
   e.preventDefault();
 
-  const message = document.getElementById("message");
+  const message =
+    document.getElementById("message");
+
+
 
   const data = {
 
     code:
-      document.getElementById("code").value,
+      document.getElementById("code")
+      .value
+      .trim(),
 
     borrowerId:
-      document.getElementById("borrowerId").value
+      document.getElementById("borrowerId")
+      .value
+      .trim()
 
   };
 
+
+
   message.innerHTML = "Saving...";
   message.className = "message";
+
+
 
   try{
 
@@ -255,40 +202,45 @@ document.getElementById("borrowForm")
       WEB_APP_URL,
       {
         method:"POST",
+
         body:JSON.stringify(data)
       }
     );
 
-    const result = await response.text();
+
+
+    const result =
+      await response.text();
+
+
 
     if(result.includes("Success")){
 
       message.innerHTML =
-      "✅ Data Saved Successfully";
+        "✅ Data Saved Successfully";
 
       message.className =
-      "message success";
+        "message success";
 
-      document.getElementById("borrowForm").reset();
-
-      document.getElementById("bookName").value = "";
+      document.getElementById("borrowForm")
+        .reset();
 
     }else{
 
       message.innerHTML =
-      "❌ Failed To Save Data";
+        "❌ Failed To Save Data";
 
       message.className =
-      "message error";
+        "message error";
     }
 
   }catch(error){
 
     message.innerHTML =
-    "❌ Server Connection Failed";
+      "❌ Server Connection Failed";
 
     message.className =
-    "message error";
+      "message error";
   }
 
 });
