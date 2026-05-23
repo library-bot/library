@@ -1,195 +1,26 @@
-<!DOCTYPE html>
-<html>
+function doGet() {
 
-<head>
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("BORROW");
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  const data = sheet.getDataRange().getValues();
 
-<title>Library Status Panel</title>
+  let result = [];
 
-<style>
+  for (let i = 1; i < data.length; i++) {
 
-body{
-  font-family:Arial;
-  background:#ff9800;
-  padding:20px;
-}
-
-.container{
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  max-width:1200px;
-  margin:auto;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th,td{
-  border:1px solid #ddd;
-  padding:10px;
-  text-align:center;
-}
-
-th{
-  background:#e65100;
-  color:white;
-}
-
-select,button{
-  padding:6px;
-}
-
-button{
-  background:#e65100;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
-
-button:hover{
-  opacity:0.9;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h2>📚 Library Status Panel</h2>
-
-<table>
-
-<thead>
-<tr>
-<th>Code</th>
-<th>Borrower</th>
-<th>Borrow Date</th>
-<th>Submit Date</th>
-<th>Book</th>
-<th>Price</th>
-<th>Status</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody id="body"></tbody>
-
-</table>
-
-</div>
-
-<script>
-
-const URL =
-"https://script.google.com/macros/s/AKfycbzjLprRTqeVntKrRltm6apG6IdeMc5oWX8ci5hOOJskb-zVRna0oWHFoz1iyHriu2P6/exec";
-
-
-
-// =============================
-// LOAD DATA
-// =============================
-async function load(){
-
-  const res =
-    await fetch(URL + "?action=getBorrowData");
-
-  const data =
-    await res.json();
-
-  let html = "";
-
-  data.forEach((r,i)=>{
-
-    html += `
-    <tr>
-      <td>${r.code}</td>
-      <td>${r.borrowerId}</td>
-      <td>${r.borrowDate}</td>
-      <td>${r.submissionDate}</td>
-      <td>${r.bookName}</td>
-      <td>${r.price}</td>
-
-      <td>
-        <select id="st${i}">
-          <option ${r.status=="Borrowed"?"selected":""}>Borrowed</option>
-          <option ${r.status=="Returned"?"selected":""}>Returned</option>
-          <option ${r.status=="Lost"?"selected":""}>Lost</option>
-          <option ${r.status=="Damaged"?"selected":""}>Damaged</option>
-        </select>
-      </td>
-
-      <td>
-        <button onclick="save('${r.code}','${r.borrowerId}',${i})">
-          Save
-        </button>
-      </td>
-    </tr>`;
-  });
-
-  document.getElementById("body").innerHTML = html;
-}
-
-
-
-// =============================
-// SAVE STATUS (FIXED)
-// =============================
-async function save(code, borrowerId, i){
-
-  const status =
-    document.getElementById("st"+i).value;
-
-  const formData =
-    new URLSearchParams();
-
-  formData.append("action","updateStatus");
-  formData.append("code",code.trim());
-  formData.append("borrowerId",borrowerId.trim());
-  formData.append("status",status);
-
-
-
-  const res =
-    await fetch(URL,{
-      method:"POST",
-      body:formData
+    result.push({
+      code: data[i][0],
+      borrowerId: data[i][1],
+      borrowDate: data[i][2],
+      submissionDate: data[i][3],
+      bookName: data[i][4],
+      price: data[i][5],
+      status: data[i][6]
     });
-
-
-
-  const text = await res.text();
-
-  let result;
-
-  try{
-    result = JSON.parse(text);
-  }catch(e){
-    alert("Server Error: " + text);
-    return;
   }
 
-
-
-  if(result.status === "success"){
-    alert("✅ Updated + Email Sent");
-    load();
-  }else{
-    alert("❌ " + result.message);
-  }
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
 }
-
-load();
-
-</script>
-
-</body>
-
-</html>
