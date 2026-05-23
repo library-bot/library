@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Library Borrow System</title>
+<title>Library Management System</title>
 
 <style>
 
@@ -28,15 +29,15 @@ body{
 .container{
   width:100%;
   max-width:650px;
-  background:white;
-  border-radius:25px;
+  background:#ffffff;
   padding:40px;
+  border-radius:25px;
   box-shadow:0 10px 35px rgba(0,0,0,0.1);
 }
 
 .title{
   text-align:center;
-  font-size:36px;
+  font-size:38px;
   font-weight:bold;
   color:#1d4ed8;
   margin-bottom:10px;
@@ -44,9 +45,9 @@ body{
 
 .subtitle{
   text-align:center;
+  font-size:18px;
   color:#475569;
   margin-bottom:35px;
-  font-size:18px;
 }
 
 .input-group{
@@ -67,6 +68,7 @@ input{
   border-radius:12px;
   font-size:16px;
   outline:none;
+  transition:0.3s;
 }
 
 input:focus{
@@ -123,7 +125,7 @@ button:hover{
   </div>
 
   <div class="subtitle">
-    Borrow Book Entry Form
+    Borrow Book Entry
   </div>
 
   <form id="borrowForm">
@@ -135,7 +137,22 @@ button:hover{
 
     <div class="input-group">
       <label>Book Name</label>
-      <input type="text" id="bookName" class="readonly" readonly>
+      <input
+        type="text"
+        id="bookName"
+        class="readonly"
+        readonly
+      >
+    </div>
+
+    <div class="input-group">
+      <label>Price</label>
+      <input
+        type="number"
+        id="price"
+        class="readonly"
+        readonly
+      >
     </div>
 
     <div class="input-group">
@@ -151,11 +168,6 @@ button:hover{
     <div class="input-group">
       <label>Submission Date</label>
       <input type="date" id="submissionDate" required>
-    </div>
-
-    <div class="input-group">
-      <label>Price</label>
-      <input type="number" id="price" required>
     </div>
 
     <button type="submit">
@@ -175,6 +187,9 @@ const WEB_APP_URL =
 
 
 
+
+// SEARCH BOOK CODE
+
 document.getElementById("code")
 .addEventListener("keyup", async function(){
 
@@ -183,37 +198,68 @@ document.getElementById("code")
   if(code === ""){
 
     document.getElementById("bookName").value = "";
+    document.getElementById("price").value = "";
+
     return;
   }
 
   try{
 
     const response = await fetch(
-      WEB_APP_URL + "?action=getBook&code=" + encodeURIComponent(code)
+
+      WEB_APP_URL +
+      "?action=getBook&code=" +
+      encodeURIComponent(code)
+
     );
 
     const result = await response.json();
 
     if(result.success){
 
+      if(
+        String(result.status).toLowerCase()
+        === "borrowed"
+      ){
+
+        document.getElementById("bookName").value =
+        "Book Already Borrowed";
+
+        document.getElementById("price").value = "";
+
+        return;
+      }
+
       document.getElementById("bookName").value =
       result.bookName;
+
+      document.getElementById("price").value =
+      result.price;
 
     }else{
 
       document.getElementById("bookName").value =
       "Book Not Found";
+
+      document.getElementById("price").value = "";
     }
 
-  }catch(err){
+  }catch(error){
 
     document.getElementById("bookName").value =
     "Connection Error";
+
+    document.getElementById("price").value = "";
   }
 
 });
 
 
+
+
+
+
+// SAVE BORROW DATA
 
 document.getElementById("borrowForm")
 .addEventListener("submit", async function(e){
@@ -224,17 +270,23 @@ document.getElementById("borrowForm")
 
   const data = {
 
-    code:document.getElementById("code").value,
+    code:
+      document.getElementById("code").value,
 
-    borrowerId:document.getElementById("borrowerId").value,
+    borrowerId:
+      document.getElementById("borrowerId").value,
 
-    borrowDate:document.getElementById("borrowDate").value,
+    borrowDate:
+      document.getElementById("borrowDate").value,
 
-    submissionDate:document.getElementById("submissionDate").value,
+    submissionDate:
+      document.getElementById("submissionDate").value,
 
-    bookName:document.getElementById("bookName").value,
+    bookName:
+      document.getElementById("bookName").value,
 
-    price:document.getElementById("price").value
+    price:
+      document.getElementById("price").value
 
   };
 
@@ -243,10 +295,13 @@ document.getElementById("borrowForm")
 
   try{
 
-    const response = await fetch(WEB_APP_URL,{
-      method:"POST",
-      body:JSON.stringify(data)
-    });
+    const response = await fetch(
+      WEB_APP_URL,
+      {
+        method:"POST",
+        body:JSON.stringify(data)
+      }
+    );
 
     const result = await response.text();
 
@@ -259,6 +314,9 @@ document.getElementById("borrowForm")
       "message success";
 
       document.getElementById("borrowForm").reset();
+
+      document.getElementById("bookName").value = "";
+      document.getElementById("price").value = "";
 
     }else{
 
