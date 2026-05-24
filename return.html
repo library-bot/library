@@ -53,14 +53,14 @@ body{
 .tableBox{
   background:white;
   border-radius:14px;
-  overflow-x:auto;   /* horizontal scroll if needed */
+  overflow-x:auto;
   box-shadow:0 8px 25px rgba(0,0,0,0.12);
 }
 
 /* TABLE */
 table{
-  width:max-content;   /* auto-fit content */
-  min-width:100%;      /* fill screen if small */
+  width:max-content;
+  min-width:100%;
   border-collapse:collapse;
 }
 
@@ -81,9 +81,9 @@ td{
   text-align:center;
   color:#1f2937;
 
-  white-space:nowrap;      /* NO LINE BREAK */
+  white-space:nowrap;
   overflow:hidden;
-  text-overflow:ellipsis;  /* clean cut if too long */
+  text-overflow:ellipsis;
 
   border-bottom:1px solid #e5e7eb;
 }
@@ -93,7 +93,6 @@ tr{
   line-height:1.1;
 }
 
-/* HOVER */
 tr:hover{
   background:#f1f5f9;
 }
@@ -126,17 +125,6 @@ select{
   padding:18px;
   font-weight:bold;
   color:#2563eb;
-}
-
-/* MOBILE */
-@media(max-width:768px){
-  th,td{
-    font-size:11px;
-    padding:6px 8px;
-  }
-  .title{
-    font-size:26px;
-  }
 }
 
 </style>
@@ -193,7 +181,6 @@ async function loadData(){
 
     data.forEach((item, i) => {
 
-      // ONLY BORROWED
       if((item.status || "").toLowerCase() !== "borrowed") return;
 
       rows += `
@@ -209,14 +196,13 @@ async function loadData(){
         <td>
           <select id="st${i}">
             <option value="">Select</option>
+
+            <!-- FIX: Borrowed now inside dropdown -->
+            <option value="Borrowed" selected>Borrowed</option>
             <option value="Returned">Returned</option>
             <option value="Lost">Lost</option>
             <option value="Damaged">Damaged</option>
           </select>
-
-          <div style="font-size:11px;color:#2563eb;font-weight:bold;margin-top:3px;">
-            Borrowed
-          </div>
         </td>
 
         <td>
