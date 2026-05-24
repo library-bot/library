@@ -1,145 +1,443 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Library Management System</title>
 
-    <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-        }
+<title>NCPSC Borrow Dashboard</title>
 
-        body{
+<style>
 
-            height:100vh;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-            font-family:"Segoe UI", sans-serif;
+body{
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#dbeafe,#f8fafc);
+  min-height:100vh;
+  padding:20px;
+}
 
-            background:#f8fbff;
+.title{
+  text-align:center;
+  font-size:38px;
+  font-weight:bold;
+  color:#1d4ed8;
+  margin-bottom:25px;
+}
 
-            overflow:hidden;
-        }
+.topBar{
+  text-align:center;
+  margin-bottom:20px;
+}
 
-        .container{
+.refreshBtn{
+  padding:12px 22px;
+  border:none;
+  border-radius:12px;
+  background:#2563eb;
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
 
-            width:100%;
-            height:100vh;
+.refreshBtn:hover{
+  background:#1d4ed8;
+}
 
-            display:flex;
-            flex-direction:column;
+.tableBox{
+  overflow-x:auto;
+  border-radius:20px;
+  background:white;
+  box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
 
-            align-items:center;
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:1100px;
+}
 
-            text-align:center;
+th{
+  background:#2563eb;
+  color:white;
+  padding:15px;
+  font-size:14px;
+}
 
-            padding:30px;
-        }
+td{
+  padding:14px;
+  border-bottom:1px solid #e2e8f0;
+  text-align:center;
+  font-size:14px;
+  color:#334155;
+}
 
-        /* TOP TITLE */
+tr:hover{
+  background:#f8fafc;
+}
 
-        h1{
+select{
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px solid #cbd5e1;
+  font-weight:bold;
+  background:#f8fafc;
+}
 
-            margin-top:20px;
+.saveBtn{
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  background:#16a34a;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
 
-            font-size:clamp(38px, 5vw, 90px);
+.saveBtn:hover{
+  background:#15803d;
+}
 
-            color:#2563eb;
+.loading{
+  padding:25px;
+  text-align:center;
+  font-size:18px;
+  color:#2563eb;
+  font-weight:bold;
+}
 
-            font-weight:900;
+@media(max-width:768px){
 
-            text-transform:uppercase;
+  .title{
+    font-size:28px;
+  }
 
-            letter-spacing:3px;
-        }
+  th,td{
+    font-size:12px;
+    padding:10px;
+  }
 
-        /* BUTTON */
+}
 
-        .btn{
+</style>
 
-            margin-top:auto;
-
-            text-decoration:none;
-
-            background:#2563eb;
-
-            color:white;
-
-            padding:22px 60px;
-
-            font-size:clamp(20px, 2vw, 32px);
-
-            font-weight:700;
-
-            border-radius:14px;
-
-            text-transform:uppercase;
-
-            transition:0.3s ease;
-
-            box-shadow:
-                0 10px 25px rgba(37,99,235,0.2);
-        }
-
-        .btn:hover{
-
-            background:#1d4ed8;
-
-            transform:translateY(-2px);
-        }
-
-        .info{
-
-            margin-top:25px;
-
-            margin-bottom:auto;
-
-            font-size:15px;
-
-            color:#64748b;
-
-            text-transform:uppercase;
-
-            letter-spacing:1px;
-        }
-
-    </style>
 </head>
 
 <body>
 
-    <div class="container">
+<div class="title">
+📚 NCPSC Borrow Dashboard
+</div>
 
-        <h1>
-            LIBRARY MANAGEMENT SYSTEM
-        </h1>
+<div class="topBar">
 
-        <a href="admin-panel.html" class="btn">
-            ENTER LIBRARY ADMIN PANEL
-        </a>
+<button class="refreshBtn" onclick="loadData()">
+🔄 Refresh
+</button>
 
-        <div class="info">
-            PRESS ENTER KEY FOR QUICK ACCESS
-        </div>
+</div>
 
-    </div>
+<div class="tableBox">
 
-    <script>
+<table>
 
-        // Redirect when Enter key is pressed
+<thead>
 
-        document.addEventListener("keydown", function(event){
+<tr>
 
-            if(event.key === "Enter"){
+<th>CODE</th>
+<th>BORROWER ID</th>
+<th>BORROW DATE</th>
+<th>SUBMISSION DATE</th>
+<th>BOOK NAME</th>
+<th>PRICE</th>
+<th>STATUS</th>
+<th>SAVE</th>
 
-                window.location.href = "admin-panel.html";
-            }
-        });
+</tr>
 
-    </script>
+</thead>
+
+<tbody id="tableBody">
+
+<tr>
+
+<td colspan="8" class="loading">
+Loading Data...
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbz0xuEEwJnB8oS1xfxOXQXt2I6-3LBgGxNhwKbVJh7DxxolEbLODbNBIKo2Q-2Tyh_f2A/exec";
+
+
+
+
+
+
+async function loadData(){
+
+  try{
+
+    const response =
+      await fetch(WEB_APP_URL);
+
+    const data =
+      await response.json();
+
+    let rows = "";
+
+
+
+    data.forEach((item,index)=>{
+
+      // SHOW ONLY BORROWED BOOKS
+
+      if(
+        !item.status ||
+        item.status.toLowerCase() != "borrowed"
+      ){
+        return;
+      }
+
+
+
+      rows += `
+
+      <tr>
+
+        <td>${item.code || ""}</td>
+
+        <td>${item.borrowerId || ""}</td>
+
+        <td>
+        ${item.borrowDate
+        ? new Date(item.borrowDate)
+        .toLocaleDateString("en-GB")
+        : ""}
+        </td>
+
+        <td>
+        ${item.submissionDate
+        ? new Date(item.submissionDate)
+        .toLocaleDateString("en-GB")
+        : ""}
+        </td>
+
+        <td>${item.bookName || ""}</td>
+
+        <td>${item.price || ""}</td>
+
+        <td>
+
+          <select id="status${index}">
+
+            <option value="">Select</option>
+
+            <option value="Returned">
+            Returned
+            </option>
+
+            <option value="Lost">
+            Lost
+            </option>
+
+            <option value="Damaged">
+            Damaged
+            </option>
+
+          </select>
+
+          <div style="
+            margin-top:6px;
+            color:#2563eb;
+            font-weight:bold;
+          ">
+            Borrowed
+          </div>
+
+        </td>
+
+        <td>
+
+          <button class="saveBtn"
+          onclick="saveStatus(${index + 2})">
+
+          Save
+
+          </button>
+
+        </td>
+
+      </tr>
+
+      `;
+    });
+
+
+
+
+    if(rows==""){
+
+      rows = `
+
+      <tr>
+
+      <td colspan="8" class="loading">
+      No Borrowed Books
+      </td>
+
+      </tr>
+
+      `;
+    }
+
+
+
+    document.getElementById("tableBody")
+      .innerHTML = rows;
+
+  }
+
+  catch(error){
+
+    console.log(error);
+
+    document.getElementById("tableBody")
+    .innerHTML = `
+
+    <tr>
+
+    <td colspan="8" class="loading">
+    Failed To Load Data
+    </td>
+
+    </tr>
+
+    `;
+  }
+
+}
+
+
+
+
+
+
+
+
+
+async function saveStatus(row){
+
+  const select =
+    document.querySelector(
+      `button[onclick="saveStatus(${row})"]`
+    ).parentElement.parentElement
+    .querySelector("select");
+
+
+
+  const status =
+    select.value;
+
+
+
+  if(status==""){
+
+    alert("Please Select Status");
+
+    return;
+  }
+
+
+
+  try{
+
+    const response =
+      await fetch(WEB_APP_URL,{
+
+      method:"POST",
+
+      mode:"cors",
+
+      headers:{
+        "Content-Type":"text/plain"
+      },
+
+      body:JSON.stringify({
+
+        row:row,
+        status:status
+
+      })
+
+    });
+
+
+
+
+    const result =
+      await response.text();
+
+    console.log(result);
+
+
+
+
+    if(
+      result.includes("Updated")
+      ||
+      result.includes("Success")
+    ){
+
+      alert("✅ Status Saved");
+
+      loadData();
+
+    }
+
+    else{
+
+      alert(result);
+    }
+
+  }
+
+  catch(error){
+
+    console.log(error);
+
+    alert("❌ Save Failed");
+  }
+
+}
+
+
+
+
+
+loadData();
+
+</script>
 
 </body>
+
 </html>
