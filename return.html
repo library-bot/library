@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Borrowed Books Dashboard</title>
+<title>NCPSC Borrowed Books Dashboard</title>
 
 <style>
 
@@ -19,6 +19,7 @@
 body{
   font-family:Arial,sans-serif;
   background:linear-gradient(135deg,#dbeafe,#f8fafc);
+  min-height:100vh;
   padding:20px;
 }
 
@@ -30,13 +31,13 @@ body{
   margin-bottom:25px;
 }
 
-.buttonBox{
+.topBar{
   text-align:center;
   margin-bottom:20px;
 }
 
 .refreshBtn{
-  padding:12px 20px;
+  padding:12px 22px;
   border:none;
   border-radius:12px;
   background:#2563eb;
@@ -44,23 +45,25 @@ body{
   font-size:15px;
   font-weight:bold;
   cursor:pointer;
+  transition:0.3s;
 }
 
 .refreshBtn:hover{
   background:#1d4ed8;
+  transform:scale(1.03);
 }
 
-.table-container{
+.tableBox{
   overflow-x:auto;
-  border-radius:18px;
+  border-radius:20px;
+  background:white;
   box-shadow:0 6px 20px rgba(0,0,0,0.1);
 }
 
 table{
   width:100%;
   border-collapse:collapse;
-  background:white;
-  min-width:1000px;
+  min-width:1100px;
 }
 
 th{
@@ -75,17 +78,19 @@ td{
   border-bottom:1px solid #e2e8f0;
   text-align:center;
   font-size:14px;
+  color:#334155;
 }
 
 tr:hover{
-  background:#f1f5f9;
+  background:#f8fafc;
 }
 
 select{
-  padding:8px;
+  padding:8px 10px;
   border-radius:8px;
   border:1px solid #cbd5e1;
   font-weight:bold;
+  background:#f8fafc;
 }
 
 .saveBtn{
@@ -96,6 +101,7 @@ select{
   color:white;
   font-weight:bold;
   cursor:pointer;
+  transition:0.3s;
 }
 
 .saveBtn:hover{
@@ -103,10 +109,26 @@ select{
 }
 
 .loading{
-  text-align:center;
-  color:#2563eb;
-  font-size:18px;
   padding:25px;
+  text-align:center;
+  font-size:18px;
+  color:#2563eb;
+  font-weight:bold;
+}
+
+.returned{
+  color:#15803d;
+  font-weight:bold;
+}
+
+.lost{
+  color:#dc2626;
+  font-weight:bold;
+}
+
+.damaged{
+  color:#d97706;
+  font-weight:bold;
 }
 
 @media(max-width:768px){
@@ -116,8 +138,8 @@ select{
   }
 
   th,td{
-    font-size:12px;
     padding:10px;
+    font-size:12px;
   }
 
 }
@@ -129,32 +151,34 @@ select{
 <body>
 
 <div class="title">
-📚 Borrowed Books Dashboard
+📚 NCPSC Borrowed Books Dashboard
 </div>
 
-<div class="buttonBox">
+<div class="topBar">
 
 <button class="refreshBtn" onclick="loadData()">
-🔄 Refresh
+🔄 Refresh Data
 </button>
 
 </div>
 
-<div class="table-container">
+<div class="tableBox">
 
 <table>
 
 <thead>
 
 <tr>
-  <th>CODE</th>
-  <th>BORROWER ID</th>
-  <th>BORROW DATE</th>
-  <th>SUBMISSION DATE</th>
-  <th>BOOK NAME</th>
-  <th>PRICE</th>
-  <th>STATUS</th>
-  <th>SAVE</th>
+
+<th>CODE</th>
+<th>BORROWER ID</th>
+<th>BORROW DATE</th>
+<th>SUBMISSION DATE</th>
+<th>BOOK NAME</th>
+<th>PRICE</th>
+<th>STATUS</th>
+<th>SAVE</th>
+
 </tr>
 
 </thead>
@@ -180,17 +204,39 @@ const WEB_APP_URL =
 
 
 
+
+
 async function loadData(){
 
   try{
 
-    const res = await fetch(WEB_APP_URL);
+    const response =
+      await fetch(WEB_APP_URL);
 
-    const data = await res.json();
+    const data =
+      await response.json();
 
     let rows = "";
 
+
+
     data.forEach((item,index)=>{
+
+      let statusClass = "";
+
+      if(item.status=="Returned"){
+        statusClass = "returned";
+      }
+
+      else if(item.status=="Lost"){
+        statusClass = "lost";
+      }
+
+      else if(item.status=="Damaged"){
+        statusClass = "damaged";
+      }
+
+
 
       rows += `
 
@@ -231,6 +277,11 @@ async function loadData(){
 
           </select>
 
+          <div class="${statusClass}"
+          style="margin-top:6px;">
+            ${item.status || ""}
+          </div>
+
         </td>
 
         <td>
@@ -249,53 +300,79 @@ async function loadData(){
       `;
     });
 
+
+
+
     if(rows==""){
 
       rows = `
+
       <tr>
+
       <td colspan="8" class="loading">
       No Data Found
       </td>
+
       </tr>
+
       `;
     }
 
-    document.getElementById("tableBody").innerHTML = rows;
+
+
+    document.getElementById("tableBody")
+      .innerHTML = rows;
 
   }
 
   catch(error){
 
-    document.getElementById("tableBody").innerHTML = `
+    console.log(error);
+
+    document.getElementById("tableBody")
+    .innerHTML = `
+
     <tr>
+
     <td colspan="8" class="loading">
     Failed To Load Data
     </td>
-    </tr>
-    `;
 
-    console.log(error);
+    </tr>
+
+    `;
   }
 
 }
 
 
 
+
+
+
+
 async function saveStatus(index){
 
   const status =
-  document.getElementById("status"+index).value;
+    document.getElementById(
+      "status"+index
+    ).value;
+
+
 
   if(status==""){
 
-    alert("Select Status");
+    alert("Please Select Status");
 
     return;
   }
 
+
+
   try{
 
-    const response = await fetch(WEB_APP_URL,{
+    const response =
+      await fetch(WEB_APP_URL,{
 
       method:"POST",
 
@@ -312,23 +389,41 @@ async function saveStatus(index){
 
     });
 
-    const result = await response.text();
 
-    alert("✅ Status Saved");
 
-    loadData();
+
+    const result =
+      await response.text();
+
+
+
+
+    if(result.includes("Updated")
+      || result.includes("Success")){
+
+      alert("✅ Status Saved Successfully");
+
+      loadData();
+
+    }
+
+    else{
+
+      alert(result);
+    }
 
   }
 
   catch(error){
 
-    alert("❌ Save Failed");
-
     console.log(error);
 
+    alert("❌ Save Failed");
   }
 
 }
+
+
 
 
 
