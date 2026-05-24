@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NCPSC Library Available Books</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Calibri, Arial, sans-serif;
+}
+
+body{
+    background:#f3f6fb;
+    padding:18px;
+    color:#111827;
+}
+
+.container{
+    width:100%;
+    max-width:1400px;
+    margin:auto;
+}
+
+.title{
+    text-align:center;
+    margin-bottom:14px;
+}
+
+.title h1{
+    font-size:34px;
+    color:#1e3a8a;
+    font-weight:900;
+    margin-bottom:4px;
+}
+
+.title h2{
+    font-size:18px;
+    color:#2563eb;
+    font-weight:700;
+}
+
+.search-box{
+    margin-bottom:12px;
+}
+
+.search-box input{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #cbd5e1;
+    outline:none;
+    border-radius:4px;
+    font-size:14px;
+    background:white;
+}
+
+.table-wrapper{
+    background:white;
+    border:1px solid #cbd5e1;
+    overflow:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:auto;
+    min-width:700px;
+}
+
+thead{
+    background:#dbeafe;
+}
+
+th{
+    border:1px solid #cbd5e1;
+    padding:7px 10px;
+    text-align:left;
+    font-size:14px;
+    font-weight:700;
+    color:#111827;
+    white-space:nowrap;
+}
+
+td{
+    border:1px solid #e2e8f0;
+    padding:6px 10px;
+    font-size:13px;
+    color:#111827;
+    white-space:nowrap;
+}
+
+tbody tr:nth-child(even){
+    background:#f8fafc;
+}
+
+tbody tr:hover{
+    background:#eff6ff;
+}
+
+.available{
+    color:#15803d;
+    font-weight:700;
+}
+
+.loading,
+.no-data{
+    text-align:center;
+    padding:18px;
+    font-size:14px;
+    font-weight:700;
+}
+
+.no-data{
+    color:red;
+}
+
+@media(max-width:768px){
+
+    body{
+        padding:8px;
+    }
+
+    .title h1{
+        font-size:24px;
+    }
+
+    .title h2{
+        font-size:14px;
+    }
+
+    th{
+        font-size:12px;
+        padding:6px;
+    }
+
+    td{
+        font-size:11px;
+        padding:5px 6px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title">
+        <h1>LIBRARY MANAGEMENT SYSTEM</h1>
+        <h2>AVAILABLE BOOKS DASHBOARD</h2>
+    </div>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search Book..."
+            onkeyup="searchBooks()"
+        >
+    </div>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>CODE</th>
+                    <th>BOOK NAME</th>
+                    <th>STATUS</th>
+                    <th>PRICE</th>
+                </tr>
+            </thead>
+
+            <tbody id="tableBody">
+
+                <tr>
+                    <td colspan="4" class="loading">
+                        Loading Books...
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbyhuefa3B9Vv7ydTmpMuVA3wyVqFw8Q0Vq81T70i5nXGUqitQ5LIkVmVOqz3uJtmpnqJA/exec";
+
+let allBooks = [];
+
+async function loadBooks(){
+
+    try{
+
+        const response = await fetch(WEB_APP_URL);
+
+        const data = await response.json();
+
+        allBooks = data.filter(book =>
+            String(book.STATUS).toLowerCase() === "available"
+        );
+
+        displayBooks(allBooks);
+
+    }
+
+    catch(error){
+
+        document.getElementById("tableBody").innerHTML = `
+            <tr>
+                <td colspan="4" class="no-data">
+                    Failed To Load Data
+                </td>
+            </tr>
+        `;
+
+        console.error(error);
+
+    }
+
+}
+
+function displayBooks(books){
+
+    const tableBody = document.getElementById("tableBody");
+
+    tableBody.innerHTML = "";
+
+    if(books.length === 0){
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="4" class="no-data">
+                    No Books Found
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    books.forEach(book => {
+
+        tableBody.innerHTML += `
+
+            <tr>
+
+                <td>${book.CODE || ""}</td>
+
+                <td>${book["BOOK NAME"] || ""}</td>
+
+                <td class="available">
+                    ${book.STATUS || ""}
+                </td>
+
+                <td>${book.PRICE || ""}</td>
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+function searchBooks(){
+
+    const value = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+    const filtered = allBooks.filter(book =>
+
+        String(book.CODE || "")
+            .toLowerCase()
+            .includes(value)
+
+        ||
+
+        String(book["BOOK NAME"] || "")
+            .toLowerCase()
+            .includes(value)
+
+        ||
+
+        String(book.PRICE || "")
+            .toLowerCase()
+            .includes(value)
+
+    );
+
+    displayBooks(filtered);
+
+}
+
+loadBooks();
+
+</script>
+
+</body>
+</html>
