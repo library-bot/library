@@ -115,21 +115,6 @@ select{
   font-weight:bold;
 }
 
-.returned{
-  color:#15803d;
-  font-weight:bold;
-}
-
-.lost{
-  color:#dc2626;
-  font-weight:bold;
-}
-
-.damaged{
-  color:#d97706;
-  font-weight:bold;
-}
-
 @media(max-width:768px){
 
   .title{
@@ -224,29 +209,13 @@ async function loadData(){
 
     data.forEach((item,index)=>{
 
-      // HIDE RETURNED BOOKS
+      // SHOW ONLY BORROWED BOOKS
 
       if(
-        item.status &&
-        item.status.toLowerCase() == "returned"
+        !item.status ||
+        item.status.toLowerCase() != "borrowed"
       ){
         return;
-      }
-
-
-
-      let statusClass = "";
-
-      if(item.status=="Returned"){
-        statusClass = "returned";
-      }
-
-      else if(item.status=="Lost"){
-        statusClass = "lost";
-      }
-
-      else if(item.status=="Damaged"){
-        statusClass = "damaged";
       }
 
 
@@ -297,9 +266,12 @@ async function loadData(){
 
           </select>
 
-          <div class="${statusClass}"
-          style="margin-top:6px;">
-            ${item.status || ""}
+          <div style="
+            margin-top:6px;
+            color:#2563eb;
+            font-weight:bold;
+          ">
+            Borrowed
           </div>
 
         </td>
