@@ -20,7 +20,6 @@ body{
   font-family:Arial,sans-serif;
   background:linear-gradient(135deg,#dbeafe,#f8fafc);
   padding:20px;
-  min-height:100vh;
 }
 
 .title{
@@ -36,7 +35,7 @@ body{
   margin-bottom:20px;
 }
 
-button{
+.refreshBtn{
   padding:12px 20px;
   border:none;
   border-radius:12px;
@@ -45,13 +44,10 @@ button{
   font-size:15px;
   font-weight:bold;
   cursor:pointer;
-  transition:0.3s;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
 }
 
-button:hover{
+.refreshBtn:hover{
   background:#1d4ed8;
-  transform:scale(1.03);
 }
 
 .table-container{
@@ -64,7 +60,7 @@ table{
   width:100%;
   border-collapse:collapse;
   background:white;
-  min-width:1100px;
+  min-width:1000px;
 }
 
 th{
@@ -72,8 +68,6 @@ th{
   color:white;
   padding:15px;
   font-size:14px;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
 }
 
 td{
@@ -81,33 +75,38 @@ td{
   border-bottom:1px solid #e2e8f0;
   text-align:center;
   font-size:14px;
-  color:#334155;
 }
 
 tr:hover{
   background:#f1f5f9;
 }
 
-.status{
-  font-weight:bold;
-  color:#15803d;
-}
-
 select{
-  padding:8px 10px;
-  border-radius:10px;
+  padding:8px;
+  border-radius:8px;
   border:1px solid #cbd5e1;
   font-weight:bold;
-  background:#f8fafc;
-  outline:none;
+}
+
+.saveBtn{
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  background:#16a34a;
+  color:white;
+  font-weight:bold;
   cursor:pointer;
+}
+
+.saveBtn:hover{
+  background:#15803d;
 }
 
 .loading{
   text-align:center;
-  font-size:18px;
   color:#2563eb;
-  padding:30px;
+  font-size:18px;
+  padding:25px;
 }
 
 @media(max-width:768px){
@@ -134,9 +133,11 @@ select{
 </div>
 
 <div class="buttonBox">
-  <button onclick="loadData()">
-    🔄 Refresh Data
-  </button>
+
+<button class="refreshBtn" onclick="loadData()">
+🔄 Refresh
+</button>
+
 </div>
 
 <div class="table-container">
@@ -153,7 +154,7 @@ select{
   <th>BOOK NAME</th>
   <th>PRICE</th>
   <th>STATUS</th>
-  <th>SUBMISSION</th>
+  <th>SAVE</th>
 </tr>
 
 </thead>
@@ -161,9 +162,9 @@ select{
 <tbody id="tableBody">
 
 <tr>
-  <td colspan="8" class="loading">
-    Loading Data...
-  </td>
+<td colspan="8" class="loading">
+Loading Data...
+</td>
 </tr>
 
 </tbody>
@@ -183,9 +184,9 @@ async function loadData(){
 
   try{
 
-    const response = await fetch(WEB_APP_URL);
+    const res = await fetch(WEB_APP_URL);
 
-    const data = await response.json();
+    const data = await res.json();
 
     let rows = "";
 
@@ -209,31 +210,38 @@ async function loadData(){
 
         <td>
 
-          <select onchange="updateStatus(${index},this.value)">
+          <select id="status${index}">
 
             <option value="">Select</option>
 
             <option value="Returned"
-              ${item.status=="Returned" ? "selected" : ""}>
-              Returned
+            ${item.status=="Returned" ? "selected" : ""}>
+            Returned
             </option>
 
             <option value="Lost"
-              ${item.status=="Lost" ? "selected" : ""}>
-              Lost
+            ${item.status=="Lost" ? "selected" : ""}>
+            Lost
             </option>
 
             <option value="Damaged"
-              ${item.status=="Damaged" ? "selected" : ""}>
-              Damaged
+            ${item.status=="Damaged" ? "selected" : ""}>
+            Damaged
             </option>
 
           </select>
 
         </td>
 
-        <td class="status">
-          ${item.submission || ""}
+        <td>
+
+          <button class="saveBtn"
+          onclick="saveStatus(${index})">
+
+          Save
+
+          </button>
+
         </td>
 
       </tr>
@@ -245,9 +253,9 @@ async function loadData(){
 
       rows = `
       <tr>
-        <td colspan="8" class="loading">
-          No Data Found
-        </td>
+      <td colspan="8" class="loading">
+      No Data Found
+      </td>
       </tr>
       `;
     }
@@ -260,9 +268,9 @@ async function loadData(){
 
     document.getElementById("tableBody").innerHTML = `
     <tr>
-      <td colspan="8" class="loading">
-        Failed to Load Data
-      </td>
+    <td colspan="8" class="loading">
+    Failed To Load Data
+    </td>
     </tr>
     `;
 
@@ -273,26 +281,40 @@ async function loadData(){
 
 
 
-async function updateStatus(rowIndex,status){
+async function saveStatus(index){
 
-  if(status=="") return;
+  const status =
+  document.getElementById("status"+index).value;
+
+  if(status==""){
+
+    alert("Select Status");
+
+    return;
+  }
 
   try{
 
-    await fetch(WEB_APP_URL,{
+    const response = await fetch(WEB_APP_URL,{
 
       method:"POST",
 
+      headers:{
+        "Content-Type":"application/json"
+      },
+
       body:JSON.stringify({
 
-        row: rowIndex + 2,
-        status: status
+        row:index + 2,
+        status:status
 
       })
 
     });
 
-    alert("✅ Status Updated Successfully");
+    const result = await response.text();
+
+    alert("✅ Status Saved");
 
     loadData();
 
@@ -300,7 +322,7 @@ async function updateStatus(rowIndex,status){
 
   catch(error){
 
-    alert("❌ Update Failed");
+    alert("❌ Save Failed");
 
     console.log(error);
 
@@ -310,10 +332,10 @@ async function updateStatus(rowIndex,status){
 
 
 
-// auto load
 loadData();
 
 </script>
 
 </body>
+
 </html>
