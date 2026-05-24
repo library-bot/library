@@ -171,7 +171,7 @@ tbody tr:hover{
 <script>
 
 const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbyhuefa3B9Vv7ydTmpMuVA3wyVqFw8Q0Vq81T70i5nXGUqitQ5LIkVmVOqz3uJtmpnqJA/exec";
+"https://script.google.com/macros/s/AKfycbwyJsk2PLEu5pqkxrnBBtLu2EMKgSwnMn-KgAvWqA2Df2pX5Gvab9JZL901Jn8e9f4Waw/exec";
 
 let allBOOKS = [];
 
@@ -190,16 +190,24 @@ async function loadBOOKS(){
 
         console.log(data);
 
-        // FIXED FOR BOOKS SHEET
         const books = data.books || [];
 
-        allBOOKS = books.filter(book =>
 
-            String(book.STATUS || "")
-            .toLowerCase()
-            .trim() === "available"
 
-        );
+        // =========================
+        // SHOW ONLY AVAILABLE BOOKS
+        // =========================
+        allBOOKS = books.filter(book => {
+
+            const status = String(book.STATUS || "")
+                .toLowerCase()
+                .trim();
+
+            return status.includes("available");
+
+        });
+
+
 
         displayBOOKS(allBOOKS);
 
@@ -235,6 +243,8 @@ function displayBOOKS(books){
 
     tableBody.innerHTML = "";
 
+
+
     if(!books || books.length === 0){
 
         tableBody.innerHTML = `
@@ -248,7 +258,9 @@ function displayBOOKS(books){
         `;
 
         return;
+
     }
+
 
 
     books.forEach(book => {
@@ -288,6 +300,8 @@ function searchBOOKS(){
         .toLowerCase()
         .trim();
 
+
+
     const filtered = allBOOKS.filter(book =>
 
         String(book.CODE || "")
@@ -313,6 +327,8 @@ function searchBOOKS(){
         .includes(value)
 
     );
+
+
 
     displayBOOKS(filtered);
 
