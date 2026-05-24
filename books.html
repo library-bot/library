@@ -200,9 +200,14 @@ async function loadBOOKS(){
 
         const books = data.books || [];
 
-        allBOOKS = books.filter(book => 
-            String(book.STATUS || "").toLowerCase().includes("available")
-        );
+        allBOOKS = books.filter(book => {
+
+    const status = String(book.STATUS || "")
+        .replace(/\s+/g, "")
+        .toLowerCase();
+
+    return status === "available";
+});
 
         renderTable();
 
