@@ -190,13 +190,10 @@ async function loadBOOKS(){
 
         console.log(data);
 
-        // IMPORTANT FIX
-        // data.books may not exist
-        // so use data directly if needed
+        // FIXED FOR BOOKS SHEET
+        const books = data.books || [];
 
-        const books = data.books ? data.books : data;
-
-        allBooks = books.filter(book =>
+        allBOOKS = books.filter(book =>
 
             String(book.STATUS || "")
             .toLowerCase()
@@ -204,7 +201,7 @@ async function loadBOOKS(){
 
         );
 
-        displayBooks(allBooks);
+        displayBOOKS(allBOOKS);
 
     }
 
@@ -231,7 +228,7 @@ async function loadBOOKS(){
 // =========================
 // DISPLAY BOOKS
 // =========================
-function displayBooks(books){
+function displayBOOKS(books){
 
     const tableBody =
     document.getElementById("tableBody");
@@ -283,7 +280,7 @@ function displayBooks(books){
 // =========================
 // SEARCH BOOKS
 // =========================
-function searchBooks(){
+function searchBOOKS(){
 
     const value = document
         .getElementById("searchInput")
@@ -291,7 +288,7 @@ function searchBooks(){
         .toLowerCase()
         .trim();
 
-    const filtered = allBooks.filter(book =>
+    const filtered = allBOOKS.filter(book =>
 
         String(book.CODE || "")
         .toLowerCase()
@@ -317,7 +314,7 @@ function searchBooks(){
 
     );
 
-    displayBooks(filtered);
+    displayBOOKS(filtered);
 
 }
 
@@ -326,7 +323,7 @@ function searchBooks(){
 // =========================
 // START
 // =========================
-loadBooks();
+loadBOOKS();
 
 </script>
 
