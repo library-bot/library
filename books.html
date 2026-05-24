@@ -68,7 +68,6 @@ body{
 table{
     width:100%;
     border-collapse:collapse;
-    table-layout:auto;
     min-width:700px;
 }
 
@@ -82,16 +81,12 @@ th{
     text-align:left;
     font-size:14px;
     font-weight:700;
-    color:#111827;
-    white-space:nowrap;
 }
 
 td{
     border:1px solid #e2e8f0;
     padding:6px 10px;
     font-size:13px;
-    color:#111827;
-    white-space:nowrap;
 }
 
 tbody tr:nth-child(even){
@@ -117,32 +112,6 @@ tbody tr:hover{
 
 .no-data{
     color:red;
-}
-
-@media(max-width:768px){
-
-    body{
-        padding:8px;
-    }
-
-    .title h1{
-        font-size:24px;
-    }
-
-    .title h2{
-        font-size:14px;
-    }
-
-    th{
-        font-size:12px;
-        padding:6px;
-    }
-
-    td{
-        font-size:11px;
-        padding:5px 6px;
-    }
-
 }
 
 </style>
@@ -219,7 +188,13 @@ async function loadBooks(){
 
         const data = await response.json();
 
-        const books = data.books || [];
+        console.log(data);
+
+        // IMPORTANT FIX
+        // data.books may not exist
+        // so use data directly if needed
+
+        const books = data.books ? data.books : data;
 
         allBooks = books.filter(book =>
 
@@ -263,7 +238,7 @@ function displayBooks(books){
 
     tableBody.innerHTML = "";
 
-    if(books.length === 0){
+    if(!books || books.length === 0){
 
         tableBody.innerHTML = `
 
@@ -285,21 +260,15 @@ function displayBooks(books){
 
             <tr>
 
-                <td>
-                    ${book.CODE || ""}
-                </td>
+                <td>${book.CODE || ""}</td>
 
-                <td>
-                    ${book["BOOK NAME"] || ""}
-                </td>
+                <td>${book["BOOK NAME"] || ""}</td>
 
                 <td class="available">
                     ${book.STATUS || ""}
                 </td>
 
-                <td>
-                    ${book.PRICE || ""}
-                </td>
+                <td>${book.PRICE || ""}</td>
 
             </tr>
 
