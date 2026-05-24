@@ -23,7 +23,7 @@ body{
 
 .container{
     width:100%;
-    max-width:1400px;
+    max-width:1450px;
     margin:auto;
 }
 
@@ -158,12 +158,14 @@ tbody tr:hover{
     </div>
 
     <div class="search-box">
+
         <input
             type="text"
             id="searchInput"
             placeholder="Search Book..."
             onkeyup="searchBooks()"
         >
+
     </div>
 
     <div class="table-wrapper">
@@ -171,12 +173,14 @@ tbody tr:hover{
         <table>
 
             <thead>
+
                 <tr>
                     <th>CODE</th>
                     <th>BOOK NAME</th>
                     <th>STATUS</th>
                     <th>PRICE</th>
                 </tr>
+
             </thead>
 
             <tbody id="tableBody">
@@ -202,6 +206,11 @@ const WEB_APP_URL =
 
 let allBooks = [];
 
+
+
+// =========================
+// LOAD BOOKS
+// =========================
 async function loadBooks(){
 
     try{
@@ -210,8 +219,14 @@ async function loadBooks(){
 
         const data = await response.json();
 
-        allBooks = data.filter(book =>
-            String(book.STATUS).toLowerCase() === "available"
+        const books = data.books || [];
+
+        allBooks = books.filter(book =>
+
+            String(book.STATUS || "")
+            .toLowerCase()
+            .trim() === "available"
+
         );
 
         displayBooks(allBooks);
@@ -221,11 +236,13 @@ async function loadBooks(){
     catch(error){
 
         document.getElementById("tableBody").innerHTML = `
+
             <tr>
                 <td colspan="4" class="no-data">
                     Failed To Load Data
                 </td>
             </tr>
+
         `;
 
         console.error(error);
@@ -234,24 +251,33 @@ async function loadBooks(){
 
 }
 
+
+
+// =========================
+// DISPLAY BOOKS
+// =========================
 function displayBooks(books){
 
-    const tableBody = document.getElementById("tableBody");
+    const tableBody =
+    document.getElementById("tableBody");
 
     tableBody.innerHTML = "";
 
     if(books.length === 0){
 
         tableBody.innerHTML = `
+
             <tr>
                 <td colspan="4" class="no-data">
-                    No Books Found
+                    No Available Books Found
                 </td>
             </tr>
+
         `;
 
         return;
     }
+
 
     books.forEach(book => {
 
@@ -259,15 +285,21 @@ function displayBooks(books){
 
             <tr>
 
-                <td>${book.CODE || ""}</td>
+                <td>
+                    ${book.CODE || ""}
+                </td>
 
-                <td>${book["BOOK NAME"] || ""}</td>
+                <td>
+                    ${book["BOOK NAME"] || ""}
+                </td>
 
                 <td class="available">
                     ${book.STATUS || ""}
                 </td>
 
-                <td>${book.PRICE || ""}</td>
+                <td>
+                    ${book.PRICE || ""}
+                </td>
 
             </tr>
 
@@ -277,30 +309,42 @@ function displayBooks(books){
 
 }
 
+
+
+// =========================
+// SEARCH BOOKS
+// =========================
 function searchBooks(){
 
     const value = document
         .getElementById("searchInput")
         .value
-        .toLowerCase();
+        .toLowerCase()
+        .trim();
 
     const filtered = allBooks.filter(book =>
 
         String(book.CODE || "")
-            .toLowerCase()
-            .includes(value)
+        .toLowerCase()
+        .includes(value)
 
         ||
 
         String(book["BOOK NAME"] || "")
-            .toLowerCase()
-            .includes(value)
+        .toLowerCase()
+        .includes(value)
 
         ||
 
         String(book.PRICE || "")
-            .toLowerCase()
-            .includes(value)
+        .toLowerCase()
+        .includes(value)
+
+        ||
+
+        String(book.STATUS || "")
+        .toLowerCase()
+        .includes(value)
 
     );
 
@@ -308,6 +352,11 @@ function searchBooks(){
 
 }
 
+
+
+// =========================
+// START
+// =========================
 loadBooks();
 
 </script>
