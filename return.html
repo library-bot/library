@@ -100,6 +100,7 @@ select{
   color:white;
   font-weight:bold;
   cursor:pointer;
+  transition:0.3s;
 }
 
 .saveBtn:hover{
@@ -127,6 +128,19 @@ select{
 .damaged{
   color:#d97706;
   font-weight:bold;
+}
+
+@media(max-width:768px){
+
+  .title{
+    font-size:28px;
+  }
+
+  th,td{
+    font-size:12px;
+    padding:10px;
+  }
+
 }
 
 </style>
@@ -193,6 +207,7 @@ const WEB_APP_URL =
 
 
 
+
 async function loadData(){
 
   try{
@@ -208,6 +223,17 @@ async function loadData(){
 
 
     data.forEach((item,index)=>{
+
+      // HIDE RETURNED BOOKS
+
+      if(
+        item.status &&
+        item.status.toLowerCase() == "returned"
+      ){
+        return;
+      }
+
+
 
       let statusClass = "";
 
@@ -233,9 +259,19 @@ async function loadData(){
 
         <td>${item.borrowerId || ""}</td>
 
-        <td>${item.borrowDate || ""}</td>
+        <td>
+        ${item.borrowDate
+        ? new Date(item.borrowDate)
+        .toLocaleDateString("en-GB")
+        : ""}
+        </td>
 
-        <td>${item.submissionDate || ""}</td>
+        <td>
+        ${item.submissionDate
+        ? new Date(item.submissionDate)
+        .toLocaleDateString("en-GB")
+        : ""}
+        </td>
 
         <td>${item.bookName || ""}</td>
 
@@ -247,18 +283,15 @@ async function loadData(){
 
             <option value="">Select</option>
 
-            <option value="Returned"
-            ${item.status=="Returned" ? "selected" : ""}>
+            <option value="Returned">
             Returned
             </option>
 
-            <option value="Lost"
-            ${item.status=="Lost" ? "selected" : ""}>
+            <option value="Lost">
             Lost
             </option>
 
-            <option value="Damaged"
-            ${item.status=="Damaged" ? "selected" : ""}>
+            <option value="Damaged">
             Damaged
             </option>
 
@@ -274,7 +307,7 @@ async function loadData(){
         <td>
 
           <button class="saveBtn"
-          onclick="saveStatus(${index})">
+          onclick="saveStatus(${index + 2})">
 
           Save
 
@@ -297,7 +330,7 @@ async function loadData(){
       <tr>
 
       <td colspan="8" class="loading">
-      No Data Found
+      No Borrowed Books
       </td>
 
       </tr>
@@ -338,12 +371,20 @@ async function loadData(){
 
 
 
-async function saveStatus(index){
+
+
+async function saveStatus(row){
+
+  const select =
+    document.querySelector(
+      `button[onclick="saveStatus(${row})"]`
+    ).parentElement.parentElement
+    .querySelector("select");
+
+
 
   const status =
-    document.getElementById(
-      "status"+index
-    ).value;
+    select.value;
 
 
 
@@ -371,7 +412,7 @@ async function saveStatus(index){
 
       body:JSON.stringify({
 
-        row:index + 2,
+        row:row,
         status:status
 
       })
