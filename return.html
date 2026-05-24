@@ -53,46 +53,52 @@ body{
 .tableBox{
   background:white;
   border-radius:14px;
-  overflow:hidden;
+  overflow-x:auto;   /* horizontal scroll if needed */
   box-shadow:0 8px 25px rgba(0,0,0,0.12);
 }
 
 /* TABLE */
 table{
-  width:100%;
-  border-collapse:collapse; /* IMPORTANT: removes all gaps */
-  table-layout:fixed;
+  width:max-content;   /* auto-fit content */
+  min-width:100%;      /* fill screen if small */
+  border-collapse:collapse;
 }
 
 /* HEADER */
 th{
   background:#2563eb;
   color:white;
-  padding:10px;
+  padding:10px 12px;
   font-size:13px;
+  white-space:nowrap;
   text-transform:uppercase;
 }
 
-/* CELLS (NO GAP DESIGN) */
+/* CELLS */
 td{
-  padding:8px;
+  padding:8px 12px;
   font-size:13px;
   text-align:center;
   color:#1f2937;
+
+  white-space:nowrap;      /* NO LINE BREAK */
+  overflow:hidden;
+  text-overflow:ellipsis;  /* clean cut if too long */
+
   border-bottom:1px solid #e5e7eb;
 }
 
-/* REMOVE EXTRA SPACE EFFECT */
+/* ROW */
 tr{
-  line-height:1.2;
+  line-height:1.1;
 }
 
-/* HOVER CLEAN */
+/* HOVER */
 tr:hover{
   background:#f1f5f9;
 }
 
-/* STATUS DROPDOWN */
+/* SELECT */
 select{
   padding:6px;
   border-radius:6px;
@@ -100,7 +106,7 @@ select{
   font-size:12px;
 }
 
-/* SAVE BUTTON */
+/* BUTTON */
 .saveBtn{
   padding:6px 10px;
   border:none;
@@ -122,18 +128,15 @@ select{
   color:#2563eb;
 }
 
-/* RESPONSIVE */
+/* MOBILE */
 @media(max-width:768px){
-
   th,td{
     font-size:11px;
-    padding:6px;
+    padding:6px 8px;
   }
-
   .title{
     font-size:26px;
   }
-
 }
 
 </style>
@@ -179,8 +182,6 @@ select{
 const WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbz0xuEEwJnB8oS1xfxOXQXt2I6-3LBgGxNhwKbVJh7DxxolEbLODbNBIKo2Q-2Tyh_f2A/exec";
 
-let globalData = [];
-
 async function loadData(){
 
   try{
@@ -188,12 +189,11 @@ async function loadData(){
     const res = await fetch(WEB_APP_URL);
     const data = await res.json();
 
-    globalData = data;
-
     let rows = "";
 
     data.forEach((item, i) => {
 
+      // ONLY BORROWED
       if((item.status || "").toLowerCase() !== "borrowed") return;
 
       rows += `
@@ -201,10 +201,8 @@ async function loadData(){
 
         <td>${item.code || ""}</td>
         <td>${item.borrowerId || ""}</td>
-
         <td>${item.borrowDate || ""}</td>
         <td>${item.submissionDate || ""}</td>
-
         <td>${item.bookName || ""}</td>
         <td>${item.price || ""}</td>
 
