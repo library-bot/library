@@ -18,7 +18,7 @@
 
 body{
   font-family:Arial,sans-serif;
-  background:linear-gradient(135deg,#dbeafe,#f8fafc);
+  background:linear-gradient(135deg,#f8fbff,#eef5ff,#fdfefe);
   min-height:100vh;
   padding:20px;
 }
@@ -27,7 +27,7 @@ body{
   text-align:center;
   font-size:38px;
   font-weight:bold;
-  color:#1d4ed8;
+  color:#5b7db1;
   margin-bottom:25px;
 }
 
@@ -40,8 +40,8 @@ body{
   padding:12px 22px;
   border:none;
   border-radius:12px;
-  background:#2563eb;
-  color:white;
+  background:#b8cdf5;
+  color:#29496b;
   font-size:15px;
   font-weight:bold;
   cursor:pointer;
@@ -49,14 +49,15 @@ body{
 }
 
 .refreshBtn:hover{
-  background:#1d4ed8;
+  background:#a8c1f0;
 }
 
 .tableBox{
   overflow-x:auto;
   border-radius:20px;
-  background:white;
-  box-shadow:0 6px 20px rgba(0,0,0,0.1);
+  background:#ffffffee;
+  box-shadow:0 6px 20px rgba(148,163,184,0.15);
+  border:1px solid #e2e8f0;
 }
 
 table{
@@ -66,52 +67,53 @@ table{
 }
 
 th{
-  background:#2563eb;
-  color:white;
+  background:#dbeafe;
+  color:#47658d;
   padding:15px;
   font-size:14px;
 }
 
 td{
   padding:14px;
-  border-bottom:1px solid #e2e8f0;
+  border-bottom:1px solid #edf2f7;
   text-align:center;
   font-size:14px;
-  color:#334155;
+  color:#475569;
 }
 
 tr:hover{
-  background:#f8fafc;
+  background:#f8fbff;
 }
 
 select{
   padding:8px 10px;
   border-radius:8px;
-  border:1px solid #cbd5e1;
+  border:1px solid #d6deeb;
   font-weight:bold;
-  background:#f8fafc;
+  background:#f8fbff;
+  color:#475569;
 }
 
 .saveBtn{
   padding:8px 14px;
   border:none;
   border-radius:8px;
-  background:#16a34a;
-  color:white;
+  background:#b7e4c7;
+  color:#2f5d50;
   font-weight:bold;
   cursor:pointer;
   transition:0.3s;
 }
 
 .saveBtn:hover{
-  background:#15803d;
+  background:#a3d9b5;
 }
 
 .loading{
   padding:25px;
   text-align:center;
   font-size:18px;
-  color:#2563eb;
+  color:#6b8bb6;
   font-weight:bold;
 }
 
@@ -268,7 +270,7 @@ async function loadData(){
 
           <div style="
             margin-top:6px;
-            color:#2563eb;
+            color:#6b8bb6;
             font-weight:bold;
           ">
             Borrowed
