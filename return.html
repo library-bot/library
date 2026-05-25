@@ -151,13 +151,6 @@ select{
 
 }
 
-  th,td{
-    font-size:12px;
-    padding:10px;
-  }
-
-}
-
 </style>
 
 </head>
@@ -218,11 +211,6 @@ Loading Data...
 const WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbz0xuEEwJnB8oS1xfxOXQXt2I6-3LBgGxNhwKbVJh7DxxolEbLODbNBIKo2Q-2Tyh_f2A/exec";
 
-
-
-
-
-
 async function loadData(){
 
   try{
@@ -235,8 +223,6 @@ async function loadData(){
 
     let rows = "";
 
-
-
     data.forEach((item,index)=>{
 
       // SHOW ONLY BORROWED BOOKS
@@ -247,8 +233,6 @@ async function loadData(){
       ){
         return;
       }
-
-
 
       rows += `
 
@@ -296,14 +280,6 @@ async function loadData(){
 
           </select>
 
-          <div style="
-            margin-top:6px;
-            color:#6b8bb6;
-            font-weight:bold;
-          ">
-            Borrowed
-          </div>
-
         </td>
 
         <td>
@@ -322,9 +298,6 @@ async function loadData(){
       `;
     });
 
-
-
-
     if(rows==""){
 
       rows = `
@@ -339,8 +312,6 @@ async function loadData(){
 
       `;
     }
-
-
 
     document.getElementById("tableBody")
       .innerHTML = rows;
@@ -367,14 +338,6 @@ async function loadData(){
 
 }
 
-
-
-
-
-
-
-
-
 async function saveStatus(row){
 
   const select =
@@ -383,12 +346,8 @@ async function saveStatus(row){
     ).parentElement.parentElement
     .querySelector("select");
 
-
-
   const status =
     select.value;
-
-
 
   if(status==""){
 
@@ -396,8 +355,6 @@ async function saveStatus(row){
 
     return;
   }
-
-
 
   try{
 
@@ -421,16 +378,10 @@ async function saveStatus(row){
 
     });
 
-
-
-
     const result =
       await response.text();
 
     console.log(result);
-
-
-
 
     if(
       result.includes("Updated")
@@ -459,10 +410,6 @@ async function saveStatus(row){
   }
 
 }
-
-
-
-
 
 loadData();
 
